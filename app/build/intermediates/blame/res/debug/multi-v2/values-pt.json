@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "/home/athul/Devolopment/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pt/values-pt.xml",
+            "outputFile": "/home/ej/Desktop/inlens_releases_beta/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-pt/values-pt.xml",
             "map": [
                 {
-                    "source": "/root/.gradle/caches/transforms-2/files-2.1/cc75e2ea4146b2a1ab8d5ed156317ae8/res/values-pt/values-pt.xml",
+                    "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/values-pt/values-pt.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4",
@@ -14,24 +14,7 @@
                     }
                 },
                 {
-                    "source": "/root/.gradle/caches/transforms-2/files-2.1/ff880832e6fdda962aebdbe4eef29032/res/values-pt/values-pt.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endColumns": "100",
-                        "endOffsets": "151"
-                    },
-                    "to": {
-                        "startLines": "20",
-                        "startColumns": "4",
-                        "startOffsets": "1989",
-                        "endColumns": "100",
-                        "endOffsets": "2085"
-                    }
-                },
-                {
-                    "source": "/root/.gradle/caches/transforms-2/files-2.1/f2159845d44896c03f8ad2afa7b7eeab/res/values-pt/values-pt.xml",
+                    "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/42a6b65105830b841a234d2309d16755/res/values-pt/values-pt.xml",
                     "from": {
                         "startLines": "2,3,4,5",
                         "startColumns": "4,4,4,4",
@@ -45,6 +28,23 @@
                         "startOffsets": "2090,2149,2196,2352",
                         "endColumns": "58,46,155,106",
                         "endOffsets": "2144,2191,2347,2454"
+                    }
+                },
+                {
+                    "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/values-pt/values-pt.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endColumns": "100",
+                        "endOffsets": "151"
+                    },
+                    "to": {
+                        "startLines": "20",
+                        "startColumns": "4",
+                        "startOffsets": "1989",
+                        "endColumns": "100",
+                        "endOffsets": "2085"
                     }
                 }
             ]
