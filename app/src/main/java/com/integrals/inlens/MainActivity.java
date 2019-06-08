@@ -137,11 +137,13 @@ public class MainActivity extends AppCompatActivity {
         2 CommunityRef
 
         3 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
+        4 Arraylist for storing structure
      */
 
     private DatabaseReference UserRef, CommunityRef;
-    private String CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+    private String CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
     private String ResultName="Unknown";
+    private String[] UserInfo;
 
     private static final String FILE_NAME = "UserInfo.ser";
 
@@ -228,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        UserInfo = new String[4];
 
         albumStartingServices = new AlbumStartingServices(getApplicationContext());
 
@@ -567,8 +571,12 @@ public class MainActivity extends AppCompatActivity {
     private void SyncUserDetails() {
 
         String data = GetFileData();
-        Toast.makeText(getApplicationContext(), " Write data : "+data, Toast.LENGTH_SHORT).show();
+        UserInfo = data.split("\n");
+        for(int i=0;i<UserInfo.length;i++)
+        {
+            Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
 
+        }
 
         if (!FileExist()) {
 
@@ -699,11 +707,13 @@ public class MainActivity extends AppCompatActivity {
                 if (dataSnapshot.hasChild("live_community")) {
                     String name = dataSnapshot.child("live_community").getValue().toString();
                     CurrentCommunityID = name+"\n";
+                    CommunityID=name.trim();
                     WriteFileData(CurrentCommunityID);
 
 
                 } else {
                     CurrentCommunityID = "Not Available\n";
+                    CommunityID="Not Available";
                     WriteFileData(CurrentCommunityID);
 
                 }
@@ -716,13 +726,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (!CurrentCommunityID.equals("-Not Available-") && CurrentCommunityID != null) {
-            Ref.child("Communities").child(CurrentCommunityID).addValueEventListener(new ValueEventListener() {
+        if (!CommunityID.equals("Not Available") && CommunityID != null) {
+
+            Ref.child("Communities").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    if (dataSnapshot.hasChild("CreatedTimestamp")) {
-                        String name = dataSnapshot.child("CreatedTimestamp").getValue().toString();
+
+                    if (dataSnapshot.child(CommunityID).hasChild("starttime")) {
+                        String name = dataSnapshot.child(CommunityID).child("starttime").getValue().toString();
                         CommunityStartTime = name;
                         WriteFileData(CommunityStartTime+"\n");
 
@@ -732,8 +744,8 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
-                    if (dataSnapshot.hasChild("EndingTimestamp")) {
-                        String name = dataSnapshot.child("EndingTimestamp").getValue().toString();
+                    if (dataSnapshot.child(CommunityID).hasChild("endtime")) {
+                        String name = dataSnapshot.child(CommunityID).child("endtime").getValue().toString();
                         CommunityEndTime = name;
                         WriteFileData(CommunityEndTime+"\n");
 
@@ -1055,13 +1067,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 AnimateFab();
 
-                SharedPreferences sharedPreferences1 = getSharedPreferences("InCommunity.pref", MODE_PRIVATE);
-                if (sharedPreferences1.getBoolean("UsingCommunity::", false) == true) {
-                    Toast.makeText(getApplicationContext(), "Sorry,You can't scan a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
-                } else {
+                if(UserInfo[1].equals("Not Available"))
+                {
                     startActivity(new Intent(MainActivity.this, QRCodeReader.class));
-
                 }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Sorry,You can't scan a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
+                }
+
             }
         });
 
@@ -1069,12 +1083,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AnimateFab();
-                SharedPreferences sharedPreferences = getSharedPreferences("InCommunity.pref", MODE_PRIVATE);
-                if (sharedPreferences.getBoolean("UsingCommunity::", false)) {
-                    Toast.makeText(getApplicationContext(), "Sorry.You can't create a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
-                } else {
+                if(UserInfo[1].equals("Not Available"))
+                {
                     startActivity(new Intent(MainActivity.this, CreateCloudAlbum.class));
-                    finish();
+                }
+                else
+                {
+                    Toast.makeText(getApplicationContext(), "Sorry,You can't scan a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -1270,7 +1285,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        ShowAllAlbums();
         MainCloudAlbumInfoBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
     }
 
@@ -1447,6 +1461,13 @@ public class MainActivity extends AppCompatActivity {
     private void quitCloudAlbum(int x) {
         Checker checker = new Checker(getApplicationContext());
         if (checker.isConnectedToNet()) {
+
+            File dir = getFilesDir();
+            File file = new File(dir, FILE_NAME);
+            file.delete();
+            SyncUserDetails();
+
+
             if (checker.checkIfInAlbum()) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                 builder.setCancelable(true);
