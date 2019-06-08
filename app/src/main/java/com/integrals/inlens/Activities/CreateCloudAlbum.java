@@ -47,6 +47,8 @@ import com.integrals.inlens.Helper.UploadDatabaseHelper;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -483,7 +485,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
             SubmitButton.setEnabled(false);
             if(ImageUri==null)
             {
-                String pushid = CommunityDatabaseReference.push().getKey();
+                final String pushid = CommunityDatabaseReference.push().getKey();
                 final DatabaseReference CommunityPost = CommunityDatabaseReference.child(pushid);
                 final DatabaseReference NewPost = PostDatabaseReference.child(pushid);
                 final Uri DownloadUri = Uri.parse("default");
@@ -499,6 +501,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                         CommunityPost.child("ActiveIndex").setValue("T");
                         CommunityPost.child("AlbumExpiry").setValue(AlbumTime);
                         CommunityPost.child("AlbumType").setValue(EventType);
+                        CommunityPost.child("EndingTimestamp").setValue(GetTimeStamp(AlbumTime));
                         CommunityPost.child("CreatedTimestamp").setValue(ServerValue.TIMESTAMP);
                         PostKey = CommunityPost.getKey().trim();
 
@@ -511,7 +514,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                         NewPost.child("CommunityID").setValue(PostKey);
                         NewPost.child("CreatedTimestamp").setValue(ServerValue.TIMESTAMP);
                         NewPost.child("AlbumType").setValue(EventType);
-
+                        InUserReference.child("live_community").setValue(pushid);
                         InProgressDialog.setMessage("Saving new data....");
 
                         CurrentDatabase currentDatabase1 = new CurrentDatabase(getApplicationContext(), "", null, 1);
@@ -712,6 +715,23 @@ public class CreateCloudAlbum extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),
                     "Please fill up all the provided fields and add album cover photo ", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private String GetTimeStamp(String albumTime) {
+
+        DateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+        Date date = null;
+        try {
+            date = (Date)formatter.parse(albumTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long output=date.getTime()/1000L;
+        String str=Long.toString(output);
+        long timestamp = Long.parseLong(str) * 1000;
+
+        timestamp+=86399000;
+        return String.valueOf(timestamp);
     }
 
     private Boolean checkNumberOfDays(String DateStart, String DateEnd){

@@ -5,7 +5,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -86,8 +85,8 @@ import com.integrals.inlens.AlbumProcedures.AlbumStartingServices;
 import com.integrals.inlens.AlbumProcedures.Checker;
 import com.integrals.inlens.AlbumProcedures.QuitCloudAlbumProcess;
 import com.integrals.inlens.Helper.NotificationHelper;
+import com.integrals.inlens.Helper.PreOperationCheck;
 import com.integrals.inlens.Helper.UploadDatabaseHelper;
-import com.integrals.inlens.ServiceImplementation.Service.UploadService;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -95,11 +94,15 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import com.vistrav.ask.Ask;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -127,17 +130,32 @@ import com.integrals.inlens.ViewHolder.AlbumViewHolder;
 
 public class MainActivity extends AppCompatActivity {
 
+    /* 2 References and 5 string variables required max
+
+        1 UserRef
+        2 CommunityRef
+
+        3 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
+
+
+     */
+
+    private DatabaseReference UserRef, CommunityRef;
+    private String CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+
+    private static final String FILE_NAME = "UserInfo.ser";
+
     private RecyclerView MemoryRecyclerView;
     private DatabaseReference InDatabaseReference;
 
     private String CommunityPostKey;
-    private String CurrentUser;
+    private String CurrentUserID;
     private FirebaseAuth InAuthentication;
     private FirebaseUser firebaseUser;
     private DatabaseReference participantDatabaseReference;
     private ProgressBar MainLoadingProgressBar;
 
-    private DatabaseReference ProgressRef;
+    private DatabaseReference Ref;
 
     private String PostKeyForEdit;
     private Activity activity;
@@ -160,7 +178,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean COVER_CHANGE = false, PROFILE_CHANGE = false;
 
     //For All ParticipantsBottomSheet
-    private Dialog  QRCodeDialog;
+    private Dialog QRCodeDialog;
     private RecyclerView MainBottomSheetParticpantsBottomSheetDialogRecyclerView;
 
     //For snackbar about Connectivity Info;
@@ -189,20 +207,22 @@ public class MainActivity extends AppCompatActivity {
 
     private TextView NoAlbumTextView;
 
-    private Boolean SHOW_TOUR;
+    private Boolean SHOW_TOUR = false;
     private NotificationManager ImageNotyManager;
     private NotificationCompat.Builder ImageNotyBuilder;
     private NotificationHelper ImageNotyHelper;
 
 
-    private ImageButton MainMenuButton , MainSearchButton , MainBackButton;
+    private ImageButton MainMenuButton, MainSearchButton, MainBackButton;
     private EditText MainSearchEdittext;
-    private RelativeLayout MainActionbar , MainSearchView;
+    private RelativeLayout MainActionbar, MainSearchView;
     private BottomSheetBehavior MainCloudAlbumInfoBottomSheetBehavior;
     private View MainCloudInfoBottomSheetView;
-    String MemberName="";
-    String MemberImage="";
+    String MemberName = "";
+    String MemberImage = "";
     private AlbumStartingServices albumStartingServices;
+
+
     public MainActivity() {
     }
 
@@ -211,46 +231,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //User Authentication
-        InAuthentication = FirebaseAuth.getInstance();
-        ProgressRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        firebaseUser = InAuthentication.getCurrentUser();
-        albumStartingServices=new AlbumStartingServices(getApplicationContext());
-        try {
-            if (firebaseUser == null) {
-                startActivity(new Intent(MainActivity.this, IntroActivity.class));
-                finish();
-            } else {
-                if (!firebaseUser.isEmailVerified()) {
+        albumStartingServices = new AlbumStartingServices(getApplicationContext());
 
-                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                    finish();
 
-                }
-                else {
-                    CurrentUser = firebaseUser.getUid();
-                    QRCodeInit();
-                    PermissionsInit();
-                    FabAnimationAndButtonsInit();
-                    ProfileDialogInit();
-                    AlbumCoverEditDialogInit();
-                    ParticipantsBottomSheetDialogInit();
-                    DetailsDialogInit();
-                    if(SHOW_TOUR)
-                    {
-                        //Only check if userimage is uploaded once
-                        CheckIfUserImageExist(CurrentUser);
-
-                    }
-                    ShowAllAlbums();
-                }
-            }
-
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-
-        ImageNotyHelper=new NotificationHelper(getBaseContext());
+        ImageNotyHelper = new NotificationHelper(getBaseContext());
 
         NoAlbumTextView = findViewById(R.id.nocloudalbumtextview);
         MainDimBackground = findViewById(R.id.main_dim_background);
@@ -265,17 +249,8 @@ public class MainActivity extends AppCompatActivity {
         MainCloudInfoBottomSheetView = findViewById(R.id.main_bottomsheetview);
         MainCloudAlbumInfoBottomSheetBehavior = BottomSheetBehavior.from(MainCloudInfoBottomSheetView);
 
-        SHOW_TOUR = getIntent().getBooleanExtra("ShowTour",false);
+        SHOW_TOUR = getIntent().getBooleanExtra("ShowTour", false);
         QRCodeVisible = getIntent().getBooleanExtra("QRCodeVisible", false);
-
-        if (QRCodeVisible) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    QRCodeDialog.show();
-                }
-            }, 600);
-        }
 
         activity = this;
 
@@ -286,15 +261,27 @@ public class MainActivity extends AppCompatActivity {
         RootForMainActivity = findViewById(R.id.root_for_main_activity);
 
 
-
         participantDatabaseReference = FirebaseDatabase.getInstance().getReference();
         MemoryRecyclerView = (RecyclerView) findViewById(R.id.CloudAlbumRecyclerView);
         MemoryRecyclerView.setHasFixedSize(true);
         MemoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         MainLoadingProgressBar = findViewById(R.id.mainloadingpbar);
 
+        FirebaseVariablesInit();
+        CheckUserAuthentication();
+
+        if (QRCodeVisible) {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    QRCodeDialog.show();
+                }
+            }, 600);
+        }
+
+
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            ProgressRef.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            Ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -313,18 +300,15 @@ public class MainActivity extends AppCompatActivity {
 
         DecryptDeepLink();
 
-        if (SHOW_TOUR)
-        {
+        if (SHOW_TOUR) {
             ShowAllTapTargets();
         }
-
 
 
         MainMenuButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (IsConnectedToNet())
-                {
+                if (IsConnectedToNet()) {
                     new BottomSheet.Builder(MainActivity.this).title(" Options").sheet(R.menu.main_menu).listener(new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -348,11 +332,10 @@ public class MainActivity extends AppCompatActivity {
                                             if (dataSnapshot.hasChild("Profile_picture")) {
                                                 String image = dataSnapshot.child("Profile_picture").getValue().toString();
                                                 if (image.equals("default")) {
-                                                    Toast.makeText(getApplicationContext(),"No profile picture detected.",Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getApplicationContext(), "No profile picture detected.", Toast.LENGTH_SHORT).show();
                                                     Glide.with(MainActivity.this).load(R.drawable.ic_account_200dp).into(UserImage);
                                                     progressBar.setVisibility(View.GONE);
-                                                }
-                                                else if (!TextUtils.isEmpty(image) && !image.equals("default")) {
+                                                } else if (!TextUtils.isEmpty(image) && !image.equals("default")) {
                                                     progressBar.setVisibility(View.VISIBLE);
                                                     Picasso.get().load(image).into(UserImage, new Callback() {
                                                         @Override
@@ -364,15 +347,15 @@ public class MainActivity extends AppCompatActivity {
 
                                                         @Override
                                                         public void onError(Exception e) {
-                                                            Toast.makeText(getApplicationContext(),"Image loading failed.",Toast.LENGTH_SHORT).show();
+                                                            Toast.makeText(getApplicationContext(), "Image loading failed.", Toast.LENGTH_SHORT).show();
                                                             progressBar.setVisibility(View.GONE);
 
                                                         }
                                                     });
 
 
-                                                }  else {
-                                                    Toast.makeText(getApplicationContext(),"Loading failed.",Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    Toast.makeText(getApplicationContext(), "Loading failed.", Toast.LENGTH_SHORT).show();
                                                     Glide.with(MainActivity.this).load(R.drawable.ic_account_200dp).into(UserImage);
                                                     progressBar.setVisibility(View.GONE);
                                                 }
@@ -397,10 +380,9 @@ public class MainActivity extends AppCompatActivity {
                                     });
 
                                     break;
-                                case R.id.working_tour:
-                                {
-                                    startActivity(new Intent(MainActivity.this, WorkingIntroActivity.class).putExtra("ShowTour","no"));
-                                    overridePendingTransition(R.anim.activity_fade_in,R.anim.activity_fade_out);
+                                case R.id.working_tour: {
+                                    startActivity(new Intent(MainActivity.this, WorkingIntroActivity.class).putExtra("ShowTour", "no"));
+                                    overridePendingTransition(R.anim.activity_fade_in, R.anim.activity_fade_out);
                                     finish();
                                     break;
                                 }
@@ -410,9 +392,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                                 case R.id.restart_service: {
-                                   AlbumStartingServices albumStartingServices
-                                           =new AlbumStartingServices(getApplicationContext());
-                                   albumStartingServices.initiateUploadService();
+                                    AlbumStartingServices albumStartingServices
+                                            = new AlbumStartingServices(getApplicationContext());
+                                    albumStartingServices.initiateUploadService();
                                 }
                                 break;
                                 case R.id.create_issues: {
@@ -424,14 +406,12 @@ public class MainActivity extends AppCompatActivity {
                                 case R.id.invite:
                                     final Intent SharingIntent = new Intent(Intent.ACTION_SEND);
                                     SharingIntent.setType("text/plain");
-                                    SharingIntent.putExtra(Intent.EXTRA_TEXT,"InLens \n\n"+"Store all memories with unlimited storage and without quality compromise. Haven't got inLens? Get it now."+"\nhttps://play.google.com/store/apps/details?id=com.integrals.inlens");
+                                    SharingIntent.putExtra(Intent.EXTRA_TEXT, "InLens \n\n" + "Store all memories with unlimited storage and without quality compromise. Haven't got inLens? Get it now." + "\nhttps://play.google.com/store/apps/details?id=com.integrals.inlens");
                                     startActivity(SharingIntent);
                             }
                         }
                     }).show();
-                }
-                else
-                {
+                } else {
                     Snackbar.make(RootForMainActivity, "Unable to connect to internet. Try again.", Snackbar.LENGTH_SHORT).show();
                 }
             }
@@ -444,18 +424,18 @@ public class MainActivity extends AppCompatActivity {
                 SEARCH_IN_PROGRESS = true;
 
                 MainActionbar.clearAnimation();
-                MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_out));
+                MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out));
                 MainActionbar.getAnimation().start();
                 MainActionbar.setVisibility(View.GONE);
 
                 MainSearchView.clearAnimation();
-                MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_in));
+                MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in));
                 MainSearchView.getAnimation().start();
                 MainSearchView.setVisibility(View.VISIBLE);
 
                 MainSearchEdittext.requestFocus();
                 final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
                 MainSearchEdittext.addTextChangedListener(new TextWatcher() {
                     @Override
@@ -500,12 +480,12 @@ public class MainActivity extends AppCompatActivity {
                 MainSearchEdittext.setText("");
 
                 MainSearchView.clearAnimation();
-                MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_out));
+                MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out));
                 MainSearchView.getAnimation().start();
                 MainSearchView.setVisibility(View.GONE);
 
                 MainActionbar.clearAnimation();
-                MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_in));
+                MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in));
                 MainActionbar.getAnimation().start();
                 MainActionbar.setVisibility(View.VISIBLE);
                 ShowAllAlbums();
@@ -517,14 +497,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if(isOpen)
-                {
+                if (isOpen) {
                     CloseFabs();
                     isOpen = false;
                 }
-                if(MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED ||
-                MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
-                {
+                if (MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED ||
+                        MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
                     MainCloudAlbumInfoBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
                 }
 
@@ -535,15 +513,12 @@ public class MainActivity extends AppCompatActivity {
         MainCloudAlbumInfoBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
-               if(newState == BottomSheetBehavior.STATE_HIDDEN)
-               {
-                   MainDimBackground.setVisibility(View.GONE);
-               }
-               else
-               {
-                   MainDimBackground.setVisibility(View.VISIBLE);
+                if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+                    MainDimBackground.setVisibility(View.GONE);
+                } else {
+                    MainDimBackground.setVisibility(View.VISIBLE);
 
-               }
+                }
             }
 
             @Override
@@ -557,25 +532,255 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void CheckUserAuthentication() {
+
+        if (InAuthentication.getCurrentUser() == null) {
+            startActivity(new Intent(MainActivity.this, IntroActivity.class));
+            finish();
+        } else {
+            if (!InAuthentication.getCurrentUser().isEmailVerified()) {
+
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                finish();
+
+            } else {
+                firebaseUser = InAuthentication.getCurrentUser();
+                CurrentUserID = firebaseUser.getUid();
+                SyncUserDetails();
+                QRCodeInit();
+                PermissionsInit();
+                FabAnimationAndButtonsInit();
+                ProfileDialogInit();
+                AlbumCoverEditDialogInit();
+                ParticipantsBottomSheetDialogInit();
+                DetailsDialogInit();
+
+                if (SHOW_TOUR) {
+                    CheckIfUserImageExist(CurrentUserID);
+                }
+
+                ShowAllAlbums();
+            }
+        }
+    }
+
+    private void SyncUserDetails() {
+
+        String data = GetFileData();
+        Toast.makeText(getApplicationContext(), " Write data : "+data, Toast.LENGTH_SHORT).show();
+
+
+        if (!FileExist()) {
+
+            GetUserInfoForSync();
+
+        }
+
+        Ref.child("Users").child(CurrentUserID).child("live_community").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                File dir = getFilesDir();
+                File file = new File(dir, FILE_NAME);
+                file.delete();
+
+                GetUserInfoForSync();
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void WriteFileData(String newData) {
+
+        FileOutputStream fileOutputStream =null;
+
+        try {
+            fileOutputStream = openFileOutput(FILE_NAME,MODE_APPEND);
+            fileOutputStream.write(newData.getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            if(fileOutputStream!=null)
+            {
+                try {
+                    fileOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private String GetFileData() {
+
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = openFileInput(FILE_NAME);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder builder = new StringBuilder();
+            String text;
+            while ((text = bufferedReader.readLine()) != null)
+            {
+                builder.append(text).append("\n");
+            }
+
+            return builder.toString();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        finally {
+            if(fileInputStream!=null)
+            {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "no data";
+    }
+
+    private boolean FileExist() {
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = openFileInput(FILE_NAME);
+        } catch (FileNotFoundException e) {
+            return false;
+        }
+        finally {
+            if(fileInputStream!=null)
+            {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return true;
+    }
+
+
+    private void GetUserInfoForSync() {
+
+        Ref.child("Users").child(CurrentUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.hasChild("Name")) {
+                    String name = dataSnapshot.child("Name").getValue().toString();
+                    CurrentUserName = name;
+                    WriteFileData(CurrentUserName+"\n");
+
+                } else {
+                    CurrentUserName = "Not Available\n";
+                    WriteFileData(CurrentUserName);
+
+
+                }
+                if (dataSnapshot.hasChild("live_community")) {
+                    String name = dataSnapshot.child("live_community").getValue().toString();
+                    CurrentCommunityID = name+"\n";
+                    WriteFileData(CurrentCommunityID);
+
+
+                } else {
+                    CurrentCommunityID = "Not Available\n";
+                    WriteFileData(CurrentCommunityID);
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        if (!CurrentCommunityID.equals("-Not Available-") && CurrentCommunityID != null) {
+            Ref.child("Communities").child(CurrentCommunityID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    if (dataSnapshot.hasChild("CreatedTimestamp")) {
+                        String name = dataSnapshot.child("CreatedTimestamp").getValue().toString();
+                        CommunityStartTime = name;
+                        WriteFileData(CommunityStartTime+"\n");
+
+                    } else {
+                        CommunityStartTime = "Not Available\n";
+                        WriteFileData(CommunityStartTime);
+
+                    }
+
+                    if (dataSnapshot.hasChild("EndingTimestamp")) {
+                        String name = dataSnapshot.child("EndingTimestamp").getValue().toString();
+                        CommunityEndTime = name;
+                        WriteFileData(CommunityEndTime+"\n");
+
+
+                    } else {
+                        CommunityEndTime = "Not Available\n";
+                        WriteFileData(CommunityEndTime);
+
+                    }
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+        }
+
+    }
+
+    private void FirebaseVariablesInit() {
+
+        InAuthentication = FirebaseAuth.getInstance();
+        Ref = FirebaseDatabase.getInstance().getReference();
+        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        CommunityRef = FirebaseDatabase.getInstance().getReference().child("Communities");
+
+    }
+
     private void CheckIfUserImageExist(String currentUser) {
 
         ProfileUserEmail = ProfileDialog.findViewById(R.id.custom_profile_dialog_useremail);
         ProfileUserEmail.setText("No Profile Image detected. Let your friends identify you.");
 
-        FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser).addValueEventListener(new ValueEventListener() {
+        Ref.child("Users").child(currentUser).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.hasChild("Profile_picture"))
-                {
+                if (dataSnapshot.hasChild("Profile_picture")) {
                     String Image = dataSnapshot.child("Profile_picture").getValue().toString();
-                    if(Image.equals("default"))
-                    {
+                    if (Image.equals("default")) {
                         ProfileDialog.show();
                     }
-                }
-                else
-                {
+                } else {
                     ProfileDialog.show();
                 }
             }
@@ -645,7 +850,6 @@ public class MainActivity extends AppCompatActivity {
                                                                                     @Override
                                                                                     public void onTargetClick(TapTargetView view) {
                                                                                         super.onTargetClick(view);
-
 
 
                                                                                     }
@@ -877,9 +1081,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void CloseFabs()
-    {
-        if(MainDimBackground.isShown()){
+    private void CloseFabs() {
+        if (MainDimBackground.isShown()) {
 
             MainDimBackground.setVisibility(View.GONE);
             ScanQrFab.clearAnimation();
@@ -1009,22 +1212,15 @@ public class MainActivity extends AppCompatActivity {
                 MemberNamesList.clear();
                 MainBottomSheetParticpantsBottomSheetDialogRecyclerView.removeAllViews();
 
-                for(DataSnapshot snapshot : dataSnapshot.getChildren() )
-                {
-                    if(snapshot.hasChild("Profile_picture"))
-                    {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    if (snapshot.hasChild("Profile_picture")) {
                         MemberImage = snapshot.child("Profile_picture").getValue().toString();
-                    }
-                    else
-                    {
+                    } else {
                         MemberImage = "default";
                     }
-                    if(snapshot.hasChild("Name"))
-                    {
+                    if (snapshot.hasChild("Name")) {
                         MemberName = snapshot.child("Name").getValue().toString();
-                    }
-                    else
-                    {
+                    } else {
                         MemberName = "-NA-";
                     }
 
@@ -1032,7 +1228,7 @@ public class MainActivity extends AppCompatActivity {
                     MemberNamesList.add(MemberName);
                 }
 
-                ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(MemberImageList,MemberNamesList);
+                ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(MemberImageList, MemberNamesList);
                 MainBottomSheetParticpantsBottomSheetDialogRecyclerView.setAdapter(participantsAdapter);
 
 
@@ -1043,7 +1239,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
 
     }
@@ -1058,9 +1253,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void ShowAllAlbums() {
         MainLoadingProgressBar.setVisibility(View.VISIBLE);
+
         MemoryRecyclerView.setVisibility(View.GONE);
 
-        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUser).child("Communities");
+        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUserID).child("Communities");
         InDatabaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1069,32 +1265,33 @@ public class MainActivity extends AppCompatActivity {
                 MemoryRecyclerView.removeAllViews();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String AlbumName = snapshot.child("AlbumTitle").getValue().toString();
-                    String AlbumCoverImage="default",PostedByProfilePic="default" ,AlbumDescription="default",User_ID="default",UserName="defaulr";
+
+                    String  AlbumName = "default",AlbumCoverImage = "default", PostedByProfilePic = "default", AlbumDescription = "default", User_ID = "default", UserName = "defaulr";
+
+                    if(snapshot.hasChild("AlbumTitle"))
+                    {
+                        AlbumName = snapshot.child("AlbumTitle").getValue().toString();
+
+                    }
 
                     final String AlbumKey = snapshot.getKey();
-                    if(snapshot.hasChild("AlbumCoverImage"))
-                    {
+                    if (snapshot.hasChild("AlbumCoverImage")) {
                         AlbumCoverImage = snapshot.child("AlbumCoverImage").getValue().toString();
 
                     }
-                    if(snapshot.hasChild("PostedByProfilePic"))
-                    {
+                    if (snapshot.hasChild("PostedByProfilePic")) {
                         PostedByProfilePic = snapshot.child("PostedByProfilePic").getValue().toString();
 
                     }
-                    if(snapshot.hasChild("AlbumDescription"))
-                    {
+                    if (snapshot.hasChild("AlbumDescription")) {
                         AlbumDescription = snapshot.child("AlbumDescription").getValue().toString();
 
                     }
-                    if(snapshot.hasChild("User_ID"))
-                    {
+                    if (snapshot.hasChild("User_ID")) {
                         User_ID = snapshot.child("User_ID").getValue().toString();
 
                     }
-                    if(snapshot.hasChild("UserName"))
-                    {
+                    if (snapshot.hasChild("UserName")) {
                         UserName = snapshot.child("UserName").getValue().toString();
 
                     }
@@ -1134,7 +1331,7 @@ public class MainActivity extends AppCompatActivity {
         MainLoadingProgressBar.setVisibility(View.VISIBLE);
         MemoryRecyclerView.setVisibility(View.GONE);
 
-        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUser).child("Communities");
+        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUserID).child("Communities");
         InDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -1210,9 +1407,9 @@ public class MainActivity extends AppCompatActivity {
                 });
                 builder.create().show();
             } else {
-                  Toast.makeText(getApplicationContext(),
-                          "Sorry you don't participate in any Cloud-Album to quit",
-                          Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),
+                        "Sorry you don't participate in any Cloud-Album to quit",
+                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -1477,9 +1674,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                                                     ImageNotyHelper.cancelUploadDataNotification();
-                                                                }
-                                                                else
-                                                                {
+                                                                } else {
                                                                     ImageNotyManager.cancel(503);
                                                                 }
 
@@ -1491,9 +1686,7 @@ public class MainActivity extends AppCompatActivity {
                                                             ProfileDialog.dismiss();
                                                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                                                 ImageNotyHelper.cancelUploadDataNotification();
-                                                            }
-                                                            else
-                                                            {
+                                                            } else {
                                                                 ImageNotyManager.cancel(503);
                                                             }
                                                         }
@@ -1507,9 +1700,7 @@ public class MainActivity extends AppCompatActivity {
                                         ProfileDialog.dismiss();
                                         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                             ImageNotyHelper.cancelUploadDataNotification();
-                                        }
-                                        else
-                                        {
+                                        } else {
                                             ImageNotyManager.cancel(503);
                                         }
                                     }
@@ -1524,9 +1715,7 @@ public class MainActivity extends AppCompatActivity {
                             ProfileDialog.dismiss();
                             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                                 ImageNotyHelper.cancelUploadDataNotification();
-                            }
-                            else
-                            {
+                            } else {
                                 ImageNotyManager.cancel(503);
                             }
                         }
@@ -1580,7 +1769,7 @@ public class MainActivity extends AppCompatActivity {
                                     MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.INVISIBLE);
                                     Toast.makeText(MainActivity.this, "Unable to perform to change cover now.", Toast.LENGTH_LONG).show();
 
-                                     }
+                                }
                             }
                         });
                     } else {
@@ -1603,11 +1792,11 @@ public class MainActivity extends AppCompatActivity {
                     double progress =
                             (100.0 * taskSnapshot.getBytesTransferred() / taskSnapshot
                                     .getTotalByteCount());
-                    Toast toast=Toast.makeText(getApplicationContext(),"",Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), "", Toast.LENGTH_SHORT);
                     toast.setText("Uploading your cover photo  " +
-                            (int)progress+"%  " +
+                            (int) progress + "%  " +
                             "completed.");
-                    toast.setGravity(Gravity.CENTER,0,0);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
                     toast.show();
 
                 }
@@ -1642,27 +1831,22 @@ public class MainActivity extends AppCompatActivity {
             MainSearchEdittext.setText("");
 
             MainSearchView.clearAnimation();
-            MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_out));
+            MainSearchView.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out));
             MainSearchView.getAnimation().start();
             MainSearchView.setVisibility(View.GONE);
 
             MainActionbar.clearAnimation();
-            MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this,R.anim.fade_in));
+            MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_in));
             MainActionbar.getAnimation().start();
             MainActionbar.setVisibility(View.VISIBLE);
             ShowAllAlbums();
 
-        }
-        else if(MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED || MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED)
-        {
+        } else if (MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED || MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             MainCloudAlbumInfoBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        }
-        else if (isOpen)
-        {
+        } else if (isOpen) {
             CloseFabs();
             isOpen = false;
-        }
-        else {
+        } else {
             super.onBackPressed();
         }
     }
@@ -1820,10 +2004,9 @@ public class MainActivity extends AppCompatActivity {
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                                     String Image = dataSnapshot.child("AlbumCoverImage").getValue().toString();
-                                    if (Image.equals("default"))
-                                    {
+                                    if (Image.equals("default")) {
 
-                                        Toast.makeText(getApplicationContext(),"No cover image detected.",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "No cover image detected.", Toast.LENGTH_SHORT).show();
 
                                         Glide.with(getApplicationContext())
                                                 .load(R.drawable.image_avatar)
@@ -1831,9 +2014,7 @@ public class MainActivity extends AppCompatActivity {
                                                 .into(MainBottomSheetAlbumCoverEditUserImage);
                                         MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.GONE);
 
-                                    }
-                                    else if(!TextUtils.isEmpty(Image) && !Image.equals("default"))
-                                    {
+                                    } else if (!TextUtils.isEmpty(Image) && !Image.equals("default")) {
 
                                         MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.VISIBLE);
                                         Picasso.get().load(Image).into(MainBottomSheetAlbumCoverEditUserImage, new Callback() {
@@ -1846,22 +2027,19 @@ public class MainActivity extends AppCompatActivity {
 
                                             @Override
                                             public void onError(Exception e) {
-                                                Toast.makeText(getApplicationContext(),"Image loading failed.",Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(getApplicationContext(), "Image loading failed.", Toast.LENGTH_SHORT).show();
                                                 MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.GONE);
 
                                             }
                                         });
-                                    }
-
-                                    else
-                                    {
-                                        Toast.makeText(getApplicationContext(),"Loading failed.",Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Loading failed.", Toast.LENGTH_SHORT).show();
                                         Glide.with(getApplicationContext())
                                                 .load(R.drawable.image_avatar)
                                                 .thumbnail(0.1f)
                                                 .into(MainBottomSheetAlbumCoverEditUserImage);
                                         MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.GONE);
-                                        Toast.makeText(getApplicationContext(),"Loading failed.",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getApplicationContext(), "Loading failed.", Toast.LENGTH_SHORT).show();
 
                                     }
 
@@ -1899,7 +2077,7 @@ public class MainActivity extends AppCompatActivity {
                                     .putExtra("AlbumName", AlbumList.get(position).getAlbumTitle())
                                     .putExtra("GlobalID::", PostKey)
                                     .putExtra("LocalID::", PostKey)
-                                    .putExtra("UserID::", CurrentUser));
+                                    .putExtra("UserID::", CurrentUserID));
 
                         } catch (NullPointerException e) {
                             e.printStackTrace();
@@ -2019,7 +2197,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public ParticipantsAdapter.ParticipantsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
-            View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.member_card,parent,false);
+            View view = LayoutInflater.from(getApplicationContext()).inflate(R.layout.member_card, parent, false);
             return new ParticipantsAdapter.ParticipantsViewHolder(view);
         }
 
