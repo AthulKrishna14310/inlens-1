@@ -1168,8 +1168,7 @@ public class MainActivity extends AppCompatActivity {
                 .go();
     }
 
-    private void DisplayAllParticipantsAsBottomSheet(String postKeyForEdit,
-                                                     DatabaseReference getParticipantDatabaseReference) {
+    private void DisplayAllParticipantsAsBottomSheet(String postKeyForEdit, DatabaseReference ref) {
 
         final Dialog BottomSheetUserDialog = new Dialog(this, android.R.style.Theme_Light_NoTitleBar);
         BottomSheetUserDialog.setCancelable(true);
@@ -1201,10 +1200,30 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        final List<String> MemberUIDList = new ArrayList<>();
         final List<String> MemberImageList = new ArrayList<>();
         final List<String> MemberNamesList = new ArrayList<>();
 
-        getParticipantDatabaseReference.child("Communities").child(postKeyForEdit).child("CommunityPhotographer").addValueEventListener(new ValueEventListener() {
+        ref.child("Communities").child(postKeyForEdit).child("participants").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                MemberUIDList.clear();
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    String key = snapshot.child("member_uid").getValue().toString();
+                    MemberUIDList.add(key);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        ref.child("Users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -1213,19 +1232,23 @@ public class MainActivity extends AppCompatActivity {
                 MainBottomSheetParticpantsBottomSheetDialogRecyclerView.removeAllViews();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    if (snapshot.hasChild("Profile_picture")) {
-                        MemberImage = snapshot.child("Profile_picture").getValue().toString();
-                    } else {
-                        MemberImage = "default";
-                    }
-                    if (snapshot.hasChild("Name")) {
-                        MemberName = snapshot.child("Name").getValue().toString();
-                    } else {
-                        MemberName = "-NA-";
-                    }
 
-                    MemberImageList.add(MemberImage);
-                    MemberNamesList.add(MemberName);
+                    String name="Unknown",image="default";
+
+                    String key = snapshot.getKey();
+                    if(MemberUIDList.contains(key))
+                    {
+                        if(snapshot.hasChild("Name"))
+                        {
+                            name = snapshot.child("Name").getValue().toString();
+                        }
+                        if(snapshot.hasChild("Profile_picture"))
+                        {
+                            image = snapshot.child("Profile_picture").getValue().toString();
+                        }
+                        MemberImageList.add(image);
+                        MemberNamesList.add(name);
+                    }
                 }
 
                 ParticipantsAdapter participantsAdapter = new ParticipantsAdapter(MemberImageList, MemberNamesList);
