@@ -42,6 +42,7 @@
             android:checked="false"
             android:text="#Ceremony"
             android:layout_weight="1"
+            android:padding="8dp"
             android:shadowColor="@color/colorPrimaryDark"
             android:background="@drawable/radiobutton_background"/>
 
@@ -54,6 +55,7 @@
             android:checked="false"
             android:text="#Hangouts"
             android:layout_weight="1"
+            android:padding="8dp"
             android:background="@drawable/radiobutton_background"/>
 
 
@@ -72,6 +74,7 @@
             android:layout_margin="5dp"
             android:checked="false"
             android:text="#Party"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="@drawable/radiobutton_background" />
 
@@ -84,6 +87,7 @@
             android:checked="false"
             android:text="#Travel"
             android:layout_weight="1"
+            android:padding="8dp"
             android:background="@drawable/radiobutton_background" />
 
     </LinearLayout>
@@ -103,6 +107,7 @@
             android:checked="false"
             android:text="#Wedding"
             android:layout_weight="1"
+            android:padding="8dp"
             android:background="@drawable/radiobutton_background"/>
 
         <Button
@@ -113,6 +118,7 @@
             android:layout_margin="5dp"
             android:checked="false"
             android:text="Others"
+            android:padding="8dp"
             android:layout_weight="1"
             android:background="@drawable/radiobutton_background"/>
 

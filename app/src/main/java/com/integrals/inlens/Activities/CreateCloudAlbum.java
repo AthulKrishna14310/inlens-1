@@ -162,7 +162,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                     AlbumTime = day + "-" +"0"+ month + "-" + year;
                     if(!checkNumberOfDays(CheckTimeTaken,AlbumTime)){
                         DateofCompletion.setText("Album Active until " + AlbumTime + " midnight");
-                        DateofCompletion.setTextSize(12);
+                        DateofCompletion.setTextSize(18);
                         AlbumDateSet = true;
                         }else {
                         AlbumTime = "";
@@ -296,7 +296,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                 {
                     EventDialog.dismiss();
                     EventPicker.setText(String.format("Event Selected : %s", EventType));
-                    EventPicker.setTextSize(12);
+                    EventPicker.setTextSize(18);
                 }
                 else
                 {
@@ -485,7 +485,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                         CommunityPost.child("type").setValue(EventType);
                         CommunityPost.child("endtime").setValue(GetTimeStamp(AlbumTime));
                         CommunityPost.child("starttime").setValue(ServerValue.TIMESTAMP);
-
+                        CommunityPost.child("admin").setValue(UserID);
 
                         CommunityPost.child("participants").push().child("member_uid").setValue(UserID);
 
@@ -501,6 +501,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                                     SubmitButton.setEnabled(true);
                                     DisplayButton.setEnabled(true);
                                     SetPostImage.setEnabled(true);
+                                    UploadProgress.setVisibility(View.GONE);
                                     CreateSituation();
                                 }
                                 else
@@ -561,6 +562,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
                                         CommunityPost.child("endtime").setValue(GetTimeStamp(AlbumTime));
                                         CommunityPost.child("starttime").setValue(ServerValue.TIMESTAMP);
                                         CommunityPost.child("participants").child(UserID).setValue("admin");
+                                        CommunityPost.child("admin").setValue(UserID);
 
                                         PostDatabaseReference.child(pushid).setValue(ServerValue.TIMESTAMP);
 

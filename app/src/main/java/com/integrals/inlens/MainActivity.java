@@ -87,6 +87,7 @@ import com.integrals.inlens.AlbumProcedures.QuitCloudAlbumProcess;
 import com.integrals.inlens.Helper.NotificationHelper;
 import com.integrals.inlens.Helper.PreOperationCheck;
 import com.integrals.inlens.Helper.UploadDatabaseHelper;
+import com.integrals.inlens.Models.CommunityModel;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -136,12 +137,11 @@ public class MainActivity extends AppCompatActivity {
         2 CommunityRef
 
         3 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
-
-
      */
 
     private DatabaseReference UserRef, CommunityRef;
     private String CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+    private String ResultName="Unknown";
 
     private static final String FILE_NAME = "UserInfo.ser";
 
@@ -187,7 +187,6 @@ public class MainActivity extends AppCompatActivity {
     //For Searching
     private static boolean SEARCH_IN_PROGRESS = false;
     private Menu MainMenu;
-    private MainSearchAdapter MainAdapterForSearch;
     private List<AlbumModel> SearchedAlbums = new ArrayList<>();
     private List<String> AlbumKeys = new ArrayList<>();
     private Boolean QRCodeVisible = false;
@@ -209,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
 
     private Boolean SHOW_TOUR = false;
     private NotificationManager ImageNotyManager;
-    private NotificationCompat.Builder ImageNotyBuilder;
     private NotificationHelper ImageNotyHelper;
 
 
@@ -281,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-            Ref.child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
+            Ref.child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -417,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        /*
         MainSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -466,6 +465,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+         */
 
 
         MainBackButton.setOnClickListener(new View.OnClickListener() {
@@ -1252,71 +1252,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void ShowAllAlbums() {
-        MainLoadingProgressBar.setVisibility(View.VISIBLE);
 
+        final List<String> MyCommunities = new ArrayList<>();
+        final List<CommunityModel> MyCommunityDetails = new ArrayList<>();
+
+        MainLoadingProgressBar.setVisibility(View.VISIBLE);
         MemoryRecyclerView.setVisibility(View.GONE);
 
-        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUserID).child("Communities");
-        InDatabaseReference.addValueEventListener(new ValueEventListener() {
+        Ref.child("Users").child(CurrentUserID).child("Communities").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                SearchedAlbums.clear();
-                MemoryRecyclerView.removeAllViews();
-
+                MyCommunities.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    String  AlbumName = "default",AlbumCoverImage = "default", PostedByProfilePic = "default", AlbumDescription = "default", User_ID = "default", UserName = "defaulr";
-
-                    if(snapshot.hasChild("AlbumTitle"))
-                    {
-                        AlbumName = snapshot.child("AlbumTitle").getValue().toString();
-
-                    }
-
-                    final String AlbumKey = snapshot.getKey();
-                    if (snapshot.hasChild("AlbumCoverImage")) {
-                        AlbumCoverImage = snapshot.child("AlbumCoverImage").getValue().toString();
-
-                    }
-                    if (snapshot.hasChild("PostedByProfilePic")) {
-                        PostedByProfilePic = snapshot.child("PostedByProfilePic").getValue().toString();
-
-                    }
-                    if (snapshot.hasChild("AlbumDescription")) {
-                        AlbumDescription = snapshot.child("AlbumDescription").getValue().toString();
-
-                    }
-                    if (snapshot.hasChild("User_ID")) {
-                        User_ID = snapshot.child("User_ID").getValue().toString();
-
-                    }
-                    if (snapshot.hasChild("UserName")) {
-                        UserName = snapshot.child("UserName").getValue().toString();
-
-                    }
-                    String DateandTime = "";
-                    AlbumModel Album = new AlbumModel(AlbumCoverImage, AlbumDescription, AlbumName, PostedByProfilePic, DateandTime, UserName, User_ID);
-                    SearchedAlbums.add(Album);
-                    AlbumKeys.add(AlbumKey);
+                    String key = snapshot.getKey();
+                    MyCommunities.add(key);
 
                 }
-
-                Collections.reverse(SearchedAlbums);
-                Collections.reverse(AlbumKeys);
-
-                if (AlbumKeys.size() == 0) {
+                if (MyCommunities.size() == 0) {
                     NoAlbumTextView.setVisibility(View.VISIBLE);
                 } else {
                     NoAlbumTextView.setVisibility(View.GONE);
                 }
 
-
-                MainAdapterForSearch = new MainSearchAdapter(getApplicationContext(), SearchedAlbums, AlbumKeys, FirebaseDatabase.getInstance().getReference().child("Communities"));
-                MemoryRecyclerView.setAdapter(MainAdapterForSearch);
-                MemoryRecyclerView.scrollToPosition(AlbumClickDetails.getInt("last_clicked_position", 0));
-                MainLoadingProgressBar.setVisibility(View.GONE);
-                MemoryRecyclerView.setVisibility(View.VISIBLE);
             }
 
             @Override
@@ -1324,9 +1283,92 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        Ref.child("Communities").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                MyCommunityDetails.clear();
+                MemoryRecyclerView.removeAllViews();
+
+                for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                {
+
+                    String admin="default",coverimage="default",description="default",endtime="default",starttime="default",status="default",title="default",type="default";
+
+                    String key = snapshot.getKey();
+                    if(MyCommunities.contains(key))
+                    {
+
+
+                        if(snapshot.hasChild("admin"))
+                        {
+                            admin = snapshot.child("admin").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("coverimage"))
+                        {
+                            coverimage = snapshot.child("coverimage").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("endtime"))
+                        {
+                            endtime = snapshot.child("endtime").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("description"))
+                        {
+                            description = snapshot.child("description").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("starttime"))
+                        {
+                            starttime = snapshot.child("starttime").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("status"))
+                        {
+                            status = snapshot.child("status").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("title"))
+                        {
+                            title = snapshot.child("title").getValue().toString();
+
+                        }
+                        if(snapshot.hasChild("type"))
+                        {
+                            type = snapshot.child("type").getValue().toString();
+
+                        }
+                        CommunityModel model = new CommunityModel(title,description,status,starttime,endtime,snapshot.child("participants").getRef(),type,coverimage,admin,key);
+                        MyCommunityDetails.add(model);
+
+                    }
+
+
+                }
+
+                Collections.reverse(MyCommunityDetails);
+                MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(),Ref,MyCommunityDetails);
+                MemoryRecyclerView.setAdapter(adapter);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        MainLoadingProgressBar.setVisibility(View.GONE);
+        MemoryRecyclerView.setVisibility(View.VISIBLE);
+
     }
 
+
+    /*
     private void ShowSearchResults(final String s) {
+
 
         MainLoadingProgressBar.setVisibility(View.VISIBLE);
         MemoryRecyclerView.setVisibility(View.GONE);
@@ -1377,6 +1419,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+     */
 
     private void quitCloudAlbum(int x) {
         Checker checker = new Checker(getApplicationContext());
@@ -1854,15 +1897,13 @@ public class MainActivity extends AppCompatActivity {
     private class MainSearchAdapter extends RecyclerView.Adapter<AlbumViewHolder> {
 
         Context context;
-        List<AlbumModel> AlbumList;
-        List<String> AlbumKeyIDs;
-        DatabaseReference CommunityRef;
+        DatabaseReference MainRef;
+        List<CommunityModel> DetailsList;
 
-        public MainSearchAdapter(Context context, List<AlbumModel> albumList, List<String> albumKeyIDs, DatabaseReference communityRef) {
+        public MainSearchAdapter(Context context, DatabaseReference mainRef, List<CommunityModel> detailsList) {
             this.context = context;
-            AlbumList = albumList;
-            AlbumKeyIDs = albumKeyIDs;
-            CommunityRef = communityRef;
+            MainRef = mainRef;
+            DetailsList = detailsList;
         }
 
         @NonNull
@@ -1875,31 +1916,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull final AlbumViewHolder holder, final int position) {
 
-            holder.SetAlbumCover(getApplicationContext(), AlbumList.get(position).getAlbumCoverImage());
-            holder.SetTitle(AlbumList.get(position).getAlbumTitle());
-            holder.SetProfilePic(getApplicationContext(), AlbumList.get(position).getPostedByProfilePic());
-            if (holder.AlbumContainer.isShown()) {
-
-
-                holder.DetailsAlbumn.clearAnimation();
-                holder.DetailsAlbumn.setAnimation(AlbumCardClose);
-                holder.DetailsAlbumn.getAnimation().start();
-
-                holder.DetailsAlbumn.setVisibility(View.INVISIBLE);
-
-            } else {
-
-
-                holder.DetailsAlbumn.clearAnimation();
-                holder.DetailsAlbumn.setAnimation(AlbumCardOpen);
-                holder.DetailsAlbumn.getAnimation().start();
-
-
-                holder.DetailsAlbumn.setVisibility(View.VISIBLE);
-
-            }
-
-
+            holder.SetAlbumCover(getApplicationContext(), DetailsList.get(position).getCoverImage());
+            holder.SetTitle(DetailsList.get(position).getTitle());
+            holder.SetProfilePic(getApplicationContext(), DetailsList.get(position).getAdmin(),MainRef);
             holder.DetailsAlbumn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -1907,23 +1926,23 @@ public class MainActivity extends AppCompatActivity {
 
                     CloseFabs();
 
-                    DisplayAllParticipantsAsBottomSheet(AlbumKeyIDs.get(position), FirebaseDatabase.getInstance().getReference());
+                    DisplayAllParticipantsAsBottomSheet(DetailsList.get(position).getCommunityID(), FirebaseDatabase.getInstance().getReference());
 
 
-                    MainBottomSheetAlbumTitle.setText(String.format("Album Title : %s", AlbumList.get(position).getAlbumTitle()));
-                    MainBottomSheetAlbumDesc.setText(String.format("Album About : %s", AlbumList.get(position).getAlbumDescription()));
-                    MainBottomSheetAlbumOwner.setText("Created By : " + AlbumList.get(position).getUserName());
+                    MainBottomSheetAlbumTitle.setText(String.format("Album Title : %s",DetailsList.get(position).getTitle()));
+                    MainBottomSheetAlbumDesc.setText(String.format("Album About : %s", DetailsList.get(position).getDescription()));
+                    MainBottomSheetAlbumOwner.setText("Created By : " + getUserNameFromID(DetailsList.get(position).getAdmin()));
 
 
-                    CommunityRef.child(AlbumKeyIDs.get(position)).addListenerForSingleValueEvent(new ValueEventListener() {
+                    MainRef.child("Communities").child(DetailsList.get(position).getCommunityID()).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                             PostCount = 0;
                             MemberCount = 0;
 
-                            if (dataSnapshot.hasChild("CommunityPhotographer")) {
-                                for (DataSnapshot PostSnapShot : dataSnapshot.child("CommunityPhotographer").getChildren()) {
+                            if (dataSnapshot.hasChild("participants")) {
+                                for (DataSnapshot PostSnapShot : dataSnapshot.child("participants").getChildren()) {
                                     MemberCount++;
                                 }
                             }
@@ -1937,19 +1956,32 @@ public class MainActivity extends AppCompatActivity {
                             MainBottomSheetAlbumMemberCount.setText(String.format("Total Members : %d", MemberCount));
                             MainBottomSheetAlbumPostCount.setText(String.format("Total Situations : %d", PostCount));
 
-                            if (dataSnapshot.hasChild("ActiveIndex")) {
-                                if (dataSnapshot.child("ActiveIndex").getValue().toString().equals("T")) {
-                                    if (dataSnapshot.hasChild("AlbumExpiry")) {
-                                        String DateEnd = "Event expires on : " + dataSnapshot.child("AlbumExpiry").getValue().toString() + " @ 11:59 PM";
-                                        MainBottomSheetAlbumEndTime.setText(DateEnd);
+                            if (dataSnapshot.hasChild("status")) {
+                                if (dataSnapshot.child("status").getValue().toString().equals("T")) {
+                                    if (dataSnapshot.hasChild("endtime")) {
+                                        String timestamp = dataSnapshot.child("endtime").getValue().toString();
+                                        long time = Long.parseLong(timestamp);
+                                        CharSequence Time = DateUtils.getRelativeDateTimeString(getApplicationContext(), time, DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+                                        String timesubstring = Time.toString().substring(Time.length() - 8);
+                                        Date date = new Date(time);
+                                        String dateformat = DateFormat.format("dd-MM-yyyy", date).toString();
+                                        String DateandTime = "Event expires on : " + dateformat + " @ " + timesubstring;
+                                        MainBottomSheetAlbumEndTime.setText(DateandTime);
                                     } else {
                                         String DateEnd = "Data not available";
                                         MainBottomSheetAlbumEndTime.setText(String.format("Album End Time : %s", DateEnd));
                                     }
-                                } else {
-                                    if (dataSnapshot.hasChild("AlbumExpiry")) {
-                                        String DateEnd = "Event expired on :" + dataSnapshot.child("AlbumExpiry").getValue().toString() + " @ 11:59 PM";
-                                        MainBottomSheetAlbumEndTime.setText(DateEnd);
+                                }
+                                else {
+                                    if (dataSnapshot.hasChild("endtime")) {
+                                        String timestamp = dataSnapshot.child("endtime").getValue().toString();
+                                        long time = Long.parseLong(timestamp);
+                                        CharSequence Time = DateUtils.getRelativeDateTimeString(getApplicationContext(), time, DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
+                                        String timesubstring = Time.toString().substring(Time.length() - 8);
+                                        Date date = new Date(time);
+                                        String dateformat = DateFormat.format("dd-MM-yyyy", date).toString();
+                                        String DateandTime = "Event expired on : " + dateformat + " @ " + timesubstring;
+                                        MainBottomSheetAlbumEndTime.setText(DateandTime);
                                     } else {
                                         String DateEnd = "Data not available";
                                         MainBottomSheetAlbumEndTime.setText(String.format("Album End Time : %s", DateEnd));
@@ -1961,8 +1993,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
 
-                            if (dataSnapshot.hasChild("CreatedTimestamp")) {
-                                String timestamp = dataSnapshot.child("CreatedTimestamp").getValue().toString();
+                            if (dataSnapshot.hasChild("starttime")) {
+                                String timestamp = dataSnapshot.child("starttime").getValue().toString();
                                 long time = Long.parseLong(timestamp);
                                 CharSequence Time = DateUtils.getRelativeDateTimeString(getApplicationContext(), time, DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, DateUtils.FORMAT_ABBREV_ALL);
                                 String timesubstring = Time.toString().substring(Time.length() - 8);
@@ -1970,16 +2002,13 @@ public class MainActivity extends AppCompatActivity {
                                 String dateformat = DateFormat.format("dd-MM-yyyy", date).toString();
                                 String DateandTime = "Event started on : " + dateformat + " @ " + timesubstring;
                                 MainBottomSheetAlbumStartTime.setText(DateandTime);
-                            } else if (dataSnapshot.hasChild("Time")) {
-                                String DateandTime = dataSnapshot.child("Time").getValue().toString();
-                                MainBottomSheetAlbumStartTime.setText(DateandTime);
                             } else {
                                 String DateEnd = "Data not available";
                                 MainBottomSheetAlbumEndTime.setText(String.format("Album Start Time : %s", DateEnd));
                             }
 
-                            if (dataSnapshot.hasChild("AlbumType")) {
-                                String EventType = dataSnapshot.child("AlbumType").getValue().toString();
+                            if (dataSnapshot.hasChild("type")) {
+                                String EventType = dataSnapshot.child("type").getValue().toString();
                                 MainBottomSheetAlbumType.setText("Event Type : " + EventType);
                             } else {
                                 String EventType = "Data not available";
@@ -1994,9 +2023,9 @@ public class MainActivity extends AppCompatActivity {
                     });
 
                     MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.VISIBLE);
-                    MainBottomSheetAlbumCoverEditDialogHeader.setText(AlbumList.get(position).getAlbumTitle());
+                    MainBottomSheetAlbumCoverEditDialogHeader.setText(DetailsList.get(position).getTitle());
 
-                    PostKeyForEdit = AlbumKeyIDs.get(position);
+                    PostKeyForEdit = DetailsList.get(position).getCommunityID();
                     FirebaseDatabase.getInstance().getReference().child("Communities")
                             .child(PostKeyForEdit)
                             .addValueEventListener(new ValueEventListener() {
@@ -2065,7 +2094,7 @@ public class MainActivity extends AppCompatActivity {
 
                     CloseFabs();
 
-                    final String PostKey = AlbumKeyIDs.get(position);
+                    final String PostKey = DetailsList.get(position).getCommunityID();
                     if (!TextUtils.isEmpty(PostKey)) {
                         try {
 
@@ -2074,7 +2103,7 @@ public class MainActivity extends AppCompatActivity {
                             AlbumEditor.apply();
 
                             startActivity(new Intent(MainActivity.this, CloudAlbum.class)
-                                    .putExtra("AlbumName", AlbumList.get(position).getAlbumTitle())
+                                    .putExtra("AlbumName", DetailsList.get(position).getTitle())
                                     .putExtra("GlobalID::", PostKey)
                                     .putExtra("LocalID::", PostKey)
                                     .putExtra("UserID::", CurrentUserID));
@@ -2096,8 +2125,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return AlbumList.size();
+            return DetailsList.size();
         }
+    }
+
+    private String getUserNameFromID(String admin) {
+
+
+        Ref.child("Users").child(admin).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String name = dataSnapshot.child("Name").getValue().toString();
+                ResultName = name;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return ResultName;
     }
 
     @Override
