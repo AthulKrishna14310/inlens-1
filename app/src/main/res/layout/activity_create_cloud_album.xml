@@ -11,8 +11,8 @@
         android:id="@+id/create_cloud_album_toolbar"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        app:cardCornerRadius="0dp"
-        android:elevation="20dp">
+        android:elevation="20dp"
+        app:cardCornerRadius="0dp">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -22,34 +22,32 @@
                 android:id="@+id/create_cloud_album_backbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_arrow_back"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                android:src="@drawable/ic_arrow_back" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Create Cloud Album"
                 android:layout_centerInParent="true"
-                android:textSize="18sp"
-                android:textColor="@color/colorAccent"/>
+                android:text="Create Cloud Album"
+                android:textColor="@color/colorAccent"
+                android:textSize="18sp" />
 
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
 
 
-
-
     <android.support.v7.widget.CardView
         android:id="@+id/CoverPhotoCard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_below="@id/create_cloud_album_toolbar"
-        android:layout_marginTop="5dp"
+        android:layout_alignParentStart="true"
         android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="10dp"
         app:cardCornerRadius="10dp"
@@ -70,14 +68,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:background="@drawable/border"
-                    android:padding="2dp"/>
+                    android:padding="2dp" />
 
                 <ImageButton
                     android:id="@+id/DisplayImage"
                     android:layout_width="50dp"
-                    android:layout_height="45dp"
-                    android:layout_centerVertical="true"
+                    android:layout_height="50dp"
                     android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
                     android:background="@drawable/ic_camera" />
 
 
@@ -85,8 +83,8 @@
                     android:id="@+id/textView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_marginEnd="5dp"
                     android:text="Tap to add album cover"
                     android:textSize="10sp" />
@@ -106,7 +104,6 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/border"
             android:padding="10dp">
 
             <android.support.design.widget.TextInputLayout
@@ -125,8 +122,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="text"
                     android:textColor="@color/colorAccent"
-                    android:textColorHint="@color/colorAccent"
-                    />
+                    android:textColorHint="@color/colorAccent" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -159,16 +155,14 @@
                 android:layout_below="@+id/AlbumDescriptionLayout"
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="center"
+                android:gravity="start"
                 android:hint="Click to pick completion date."
                 android:textColor="@color/colorAccent"
                 android:textColorHint="@color/colorAccent"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                />
+                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/EventTypeText"
@@ -177,55 +171,58 @@
                 android:layout_below="@+id/TimeEditText"
                 android:layout_centerHorizontal="true"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginBottom="10dp"
-                android:gravity="center"
+                android:gravity="start"
                 android:hint="Click to pick event type."
                 android:textColor="@color/colorAccent"
                 android:textColorHint="@color/colorAccent"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:textSize="18sp" />
+
         </RelativeLayout>
     </android.support.v7.widget.CardView>
-     <android.support.v7.widget.CardView
-         android:layout_width="wrap_content"
-         android:layout_height="wrap_content"
-         android:layout_alignParentEnd="true"
-         android:layout_alignParentBottom="true"
-         android:layout_marginStart="2dp"
-         android:layout_marginTop="15dp"
-         android:layout_marginEnd="10dp"
-         android:layout_marginBottom="10dp"
-         android:elevation="5dp"
-         app:cardCornerRadius="31.5dp"
-         >
 
-         <ProgressBar
-             android:id="@+id/UploadProgress"
-             style="?android:attr/progressBarStyle"
-             android:layout_width="63dp"
-             android:layout_height="63dp"
-             android:visibility="invisible" />
+    <android.support.v7.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:elevation="5dp"
+        app:cardCornerRadius="31.5dp">
 
-         <Button
-        android:id="@+id/DoneButton"
-        android:layout_width="63dp"
-        android:layout_height="63dp"
-        android:background="@drawable/ic_tick" />
-     </android.support.v7.widget.CardView>
+        <ProgressBar
+            android:id="@+id/UploadProgress"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_gravity="center"
+            android:visibility="invisible" />
 
+        <Button
+            android:id="@+id/DoneButton"
+            android:layout_width="63dp"
+            android:layout_height="63dp"
+            android:layout_gravity="center"
+            android:background="@drawable/ic_tick" />
+
+    </android.support.v7.widget.CardView>
 
 
     <TextView
         android:id="@+id/UploadProgressTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="25dp"
         android:layout_marginBottom="30dp"
-        android:layout_marginLeft="25dp"
         android:text="Upload Progress"
         android:textColor="#3E3D63"
-        android:textSize="10sp"
+        android:textSize="12sp"
         android:visibility="invisible" />
 </RelativeLayout>
