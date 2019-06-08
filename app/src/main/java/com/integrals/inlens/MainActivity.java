@@ -2026,13 +2026,13 @@ public class MainActivity extends AppCompatActivity {
                     MainBottomSheetAlbumCoverEditDialogHeader.setText(DetailsList.get(position).getTitle());
 
                     PostKeyForEdit = DetailsList.get(position).getCommunityID();
-                    FirebaseDatabase.getInstance().getReference().child("Communities")
+                    Ref.child("Communities")
                             .child(PostKeyForEdit)
                             .addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                    String Image = dataSnapshot.child("AlbumCoverImage").getValue().toString();
+                                    String Image = dataSnapshot.child("coverimage").getValue().toString();
                                     if (Image.equals("default")) {
 
                                         Toast.makeText(getApplicationContext(), "No cover image detected.", Toast.LENGTH_SHORT).show();
@@ -2132,7 +2132,7 @@ public class MainActivity extends AppCompatActivity {
     private String getUserNameFromID(String admin) {
 
 
-        Ref.child("Users").child(admin).addValueEventListener(new ValueEventListener() {
+        Ref.child("Users").child(admin).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
