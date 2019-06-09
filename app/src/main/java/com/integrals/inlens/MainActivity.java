@@ -1106,6 +1106,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AnimateFab();
+                String data = GetFileData();
+                UserInfo = data.split("\n");
                 if(UserInfo[1].equals("Not Available"))
                 {
                     startActivity(new Intent(MainActivity.this, CreateCloudAlbum.class));
@@ -1502,7 +1504,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else
         {
-            Toast.makeText(getApplicationContext(), "Unable to quit current album.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Not a participant in any album.", Toast.LENGTH_SHORT).show();
         }
     }
 
