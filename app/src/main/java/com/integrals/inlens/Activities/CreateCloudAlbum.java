@@ -750,9 +750,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
         }
         else
         {
-            startActivity(new Intent(CreateCloudAlbum.this,MainActivity.class).putExtra("QRCodeVisible",false));
-            overridePendingTransition(R.anim.activity_fade_in,R.anim.activity_fade_out);
-            finish();
+            super.onBackPressed();
         }
     }
 
@@ -832,9 +830,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
 
         if(item.getItemId()==android.R.id.home)
         {
-            startActivity(new Intent(CreateCloudAlbum.this,MainActivity.class).putExtra("QRCodeVisible",false));
-            overridePendingTransition(R.anim.activity_fade_in,R.anim.activity_fade_out);
-            finish();
+            onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -845,9 +841,7 @@ public class CreateCloudAlbum extends AppCompatActivity {
 
         if(keyCode==KeyEvent.KEYCODE_BACK)
         {
-            startActivity(new Intent(CreateCloudAlbum.this,MainActivity.class).putExtra("QRCodeVisible",false));
-            overridePendingTransition(R.anim.activity_fade_in,R.anim.activity_fade_out);
-            finish();
+            onBackPressed();
         }
         return super.onKeyDown(keyCode, event);
     }

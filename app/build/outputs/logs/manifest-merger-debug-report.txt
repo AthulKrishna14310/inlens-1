@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
 MERGED from [com.ramotion.cardslider:card-slider:0.3.0] /home/ej/.gradle/caches/transforms-2/files-2.1/b5de634689b73d0745160851cda8d51a/AndroidManifest.xml:2:1-17:12
 MERGED from [info.androidhive:barcode-reader:1.1.5] /home/ej/.gradle/caches/transforms-2/files-2.1/7eaa1813f270e8f56127d885aa8801cc/AndroidManifest.xml:2:1-15:12
 MERGED from [io.github.tonnyl:light:1.0.0] /home/ej/.gradle/caches/transforms-2/files-2.1/8a2c513f3744307b7972ab435365f188/AndroidManifest.xml:2:1-15:12
@@ -58,20 +58,20 @@ MERGED from [android.arch.lifecycle:livedata-core:1.1.0] /home/ej/.gradle/caches
 MERGED from [android.arch.lifecycle:viewmodel:1.1.0] /home/ej/.gradle/caches/transforms-2/files-2.1/00793a76bc5992275923034c32445635/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.lifecycle:runtime:1.1.0] /home/ej/.gradle/caches/transforms-2/files-2.1/bc3b23ed2e3d238e43e611d62c0c0fa4/AndroidManifest.xml:17:1-22:12
 MERGED from [android.arch.core:runtime:1.1.0] /home/ej/.gradle/caches/transforms-2/files-2.1/1f7fa7ac69bef6684303d30e095d5de5/AndroidManifest.xml:17:1-22:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
-INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
+INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
 	package
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:3:5-35
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
 	android:versionName
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
 	android:versionCode
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-121:12
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:1-122:12
 		INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml
 	xmlns:android
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:2:11-69
@@ -140,7 +140,7 @@ ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xm
 	android:name
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:15:22-42
 application
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:17:5-119:19
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:17:5-120:19
 MERGED from [com.ramotion.cardslider:card-slider:0.3.0] /home/ej/.gradle/caches/transforms-2/files-2.1/b5de634689b73d0745160851cda8d51a/AndroidManifest.xml:11:5-15:19
 MERGED from [com.ramotion.cardslider:card-slider:0.3.0] /home/ej/.gradle/caches/transforms-2/files-2.1/b5de634689b73d0745160851cda8d51a/AndroidManifest.xml:11:5-15:19
 MERGED from [io.github.tonnyl:light:1.0.0] /home/ej/.gradle/caches/transforms-2/files-2.1/8a2c513f3744307b7972ab435365f188/AndroidManifest.xml:9:5-13:19
@@ -296,95 +296,97 @@ ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xm
 	android:name
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:67:13-69
 activity#com.integrals.inlens.Activities.CreateCloudAlbum
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:70:9-73:51
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:70:9-74:51
 	android:screenOrientation
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:72:13-49
+	android:parentActivityName
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:73:13-55
 	android:theme
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:73:13-49
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:74:13-49
 	android:name
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:71:13-56
 activity#com.integrals.inlens.Activities.RegisterUser
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:76:9-79:51
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:77:9-80:51
 	android:screenOrientation
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:78:13-49
-	android:theme
 		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:79:13-49
+	android:theme
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:80:13-49
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:77:13-52
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:78:13-52
 activity#com.integrals.inlens.Activities.CloudAlbum
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:80:9-84:54
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:81:9-85:54
 	android:screenOrientation
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:83:13-49
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:84:13-49
 	android:parentActivityName
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:82:13-55
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:83:13-55
 	android:theme
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:84:13-52
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:85:13-52
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:81:13-50
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:82:13-50
 activity#com.integrals.inlens.Activities.QRCodeGenerator
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:85:9-87:52
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:86:9-88:52
 	android:screenOrientation
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:87:13-49
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:88:13-49
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:86:13-55
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:87:13-55
 activity#com.integrals.inlens.Activities.QRCodeReader
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:88:9-90:52
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:89:9-91:52
 	android:screenOrientation
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:90:13-49
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:91:13-49
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:89:13-52
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:90:13-52
 meta-data#com.google.android.gms.vision
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:92:9-94:39
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:93:9-95:39
 	android:value
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:94:13-36
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:95:13-36
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:93:13-57
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:94:13-57
 meta-data#preloaded_fonts
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:95:9-97:57
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:96:9-98:57
 	android:resource
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:97:13-54
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:98:13-54
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:96:13-43
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:97:13-43
 service#com.integrals.inlens.ServiceImplementation.Service.UploadService
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:99:9-80
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:100:9-80
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:99:18-77
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:100:18-77
 service#com.integrals.inlens.ServiceImplementation.JobScheduler.JobService
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:100:9-102:73
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:101:9-103:73
 	android:permission
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:102:14-70
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:103:14-70
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:101:14-75
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:102:14-75
 service#com.integrals.inlens.ServiceImplementation.JobScheduler.AlertNotificationJobPackage.JobService
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:104:9-105:72
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:105:9-106:72
 	android:permission
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:105:13-69
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:106:13-69
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:104:18-107
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:105:18-107
 activity#com.integrals.inlens.Activities.ResetPassword
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:109:9-110:51
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:110:9-111:51
 	android:theme
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:110:13-49
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:111:13-49
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:109:19-59
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:110:19-59
 activity#com.integrals.inlens.Activities.PhotoView
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:111:9-58
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:112:9-58
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:111:19-55
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:112:19-55
 activity#com.integrals.inlens.Activities.IntroActivity
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:112:9-114:55
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:113:9-115:55
 	android:theme
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:114:13-52
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:115:13-52
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:113:13-53
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:114:13-53
 activity#com.integrals.inlens.Activities.SharedImageActivity
-ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:115:9-118:55
+ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:116:9-119:55
 	android:parentActivityName
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:117:13-55
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:118:13-55
 	android:theme
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:118:13-52
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:119:13-52
 	android:name
-		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:116:13-59
+		ADDED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml:117:13-59
 uses-sdk
 INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /home/ej/Desktop/inlens_releases_beta/app/src/main/AndroidManifest.xml

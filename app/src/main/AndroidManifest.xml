@@ -70,6 +70,7 @@
         <activity
             android:name=".Activities.CreateCloudAlbum"
             android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"
             android:theme="@style/CalenderTheme"/>
 
 

@@ -24,7 +24,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -83,9 +82,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.integrals.inlens.AlbumProcedures.AlbumStartingServices;
 import com.integrals.inlens.AlbumProcedures.Checker;
-import com.integrals.inlens.AlbumProcedures.QuitCloudAlbumProcess;
 import com.integrals.inlens.Helper.NotificationHelper;
-import com.integrals.inlens.Helper.PreOperationCheck;
 import com.integrals.inlens.Helper.UploadDatabaseHelper;
 import com.integrals.inlens.Models.CommunityModel;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
@@ -138,12 +135,18 @@ public class MainActivity extends AppCompatActivity {
 
         3 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
         4 Arraylist for storing structure
+        5 Arraylist for all user album details
+
+        6 OfflineCommunityID required while sync
      */
 
+
+
     private DatabaseReference UserRef, CommunityRef;
-    private String CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+    private String OfflineCommunityID="--",CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
     private String ResultName="Unknown";
     private String[] UserInfo;
+    private List<CommunityModel> MyCommunityDetails;
 
     private static final String FILE_NAME = "UserInfo.ser";
 
@@ -419,12 +422,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        /*
+
         MainSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 SEARCH_IN_PROGRESS = true;
+
+                final List<CommunityModel> CommunitySearchDetails=new ArrayList<>();
 
                 MainActionbar.clearAnimation();
                 MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out));
@@ -454,12 +459,34 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void afterTextChanged(Editable editable) {
 
+                        NoAlbumTextView.setVisibility(View.GONE);
+
                         if (!TextUtils.isEmpty(editable.toString())) {
+
+                            CommunitySearchDetails.clear();
                             MemoryRecyclerView.setVisibility(View.VISIBLE);
                             NoAlbumTextView.setVisibility(View.GONE);
-                            ShowSearchResults(editable.toString());
+                            for(int i=0;i<MyCommunityDetails.size();i++)
+                            {
+                                if(MyCommunityDetails.get(i).getTitle().toLowerCase().contains(editable.toString().toLowerCase()))
+                                {
+                                    CommunitySearchDetails.add(MyCommunityDetails.get(i));
+                                }
+                            }
+
+                            if(CommunitySearchDetails.size()==0)
+                            {
+                                NoAlbumTextView.setVisibility(View.VISIBLE);
+                            }
+                            else
+                            {
+                                NoAlbumTextView.setVisibility(View.GONE);
+                            }
+
+                            MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(),Ref,CommunitySearchDetails);
+                            MemoryRecyclerView.setAdapter(adapter);
+
                         } else {
-                            SearchedAlbums.clear();
                             MemoryRecyclerView.removeAllViews();
                             ShowAllAlbums();
                         }
@@ -469,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-         */
+
 
 
         MainBackButton.setOnClickListener(new View.OnClickListener() {
@@ -550,7 +577,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 firebaseUser = InAuthentication.getCurrentUser();
                 CurrentUserID = firebaseUser.getUid();
-                SyncUserDetails();
+                CheckForUserInfoSync();
                 QRCodeInit();
                 PermissionsInit();
                 FabAnimationAndButtonsInit();
@@ -568,39 +595,31 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void SyncUserDetails() {
-
-        String data = GetFileData();
-        UserInfo = data.split("\n");
-        for(int i=0;i<UserInfo.length;i++)
-        {
-            Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
-
-        }
+    private void CheckForUserInfoSync() {
 
         if (!FileExist()) {
 
-            GetUserInfoForSync();
+            SyncUserInfo();
+        }
+        else
+        {
+            String data = GetFileData();
+            UserInfo = data.split("\n");
+
+            if(UserInfo[1].equals("Not Available"))
+            {
+                Toast.makeText(getApplicationContext(),"Synchronizing User Information",Toast.LENGTH_SHORT).show();
+                SyncUserInfo();
+            }
+            else
+            {
+                for(int i=0;i<UserInfo.length;i++)
+                {
+                    Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
+                }
+            }
 
         }
-
-        Ref.child("Users").child(CurrentUserID).child("live_community").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                File dir = getFilesDir();
-                File file = new File(dir, FILE_NAME);
-                file.delete();
-
-                GetUserInfoForSync();
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
 
     }
 
@@ -688,33 +707,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void GetUserInfoForSync() {
+    private void SyncUserInfo() {
 
-        Ref.child("Users").child(CurrentUserID).addValueEventListener(new ValueEventListener() {
+        try
+        {
+            String data = GetFileData();
+            UserInfo = data.split("\n");
+            OfflineCommunityID = UserInfo[1];
+        }
+        catch (IndexOutOfBoundsException e)
+        {
+            OfflineCommunityID="Not Available";
+
+        }
+
+
+
+
+        Ref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.hasChild("Name")) {
-                    String name = dataSnapshot.child("Name").getValue().toString();
-                    CurrentUserName = name;
-                    WriteFileData(CurrentUserName+"\n");
+                if (dataSnapshot.child("Users").child(CurrentUserID).hasChild("Name")) {
+                    String name = dataSnapshot.child("Users").child(CurrentUserID).child("Name").getValue().toString();
+                    CurrentUserName = name+"\n";
 
                 } else {
                     CurrentUserName = "Not Available\n";
-                    WriteFileData(CurrentUserName);
 
 
                 }
-                if (dataSnapshot.hasChild("live_community")) {
-                    String name = dataSnapshot.child("live_community").getValue().toString();
+                if (dataSnapshot.child("Users").child(CurrentUserID).hasChild("live_community")) {
+                    String name = dataSnapshot.child("Users").child(CurrentUserID).child("live_community").getValue().toString();
                     CurrentCommunityID = name+"\n";
                     CommunityID=name.trim();
-                    WriteFileData(CurrentCommunityID);
 
 
                 } else {
                     CurrentCommunityID = "Not Available\n";
                     CommunityID="Not Available";
+
+                }
+
+                if (dataSnapshot.child("Communities").child(CommunityID).hasChild("starttime")) {
+                    String name = dataSnapshot.child("Communities").child(CommunityID).child("starttime").getValue().toString();
+                    CommunityStartTime = name+"\n";
+
+                } else {
+                    CommunityStartTime = "Not Available\n";
+
+                }
+
+                if (dataSnapshot.child("Communities").child(CommunityID).hasChild("endtime")) {
+                    String name = dataSnapshot.child("Communities").child(CommunityID).child("endtime").getValue().toString();
+                    CommunityEndTime = name+"\n";
+
+
+                } else {
+                    CommunityEndTime = "Not Available\n";
+
+                }
+
+                if(!CommunityID.equals(OfflineCommunityID))
+                {
+                    File dir = getFilesDir();
+                    File file = new File(dir, FILE_NAME);
+                    file.delete();
+
+                    WriteFileData(CurrentUserName);
                     WriteFileData(CurrentCommunityID);
+                    WriteFileData(CommunityStartTime);
+                    WriteFileData(CommunityEndTime);
+
 
                 }
 
@@ -726,46 +789,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        if (!CommunityID.equals("Not Available") && CommunityID != null) {
-
-            Ref.child("Communities").addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                    if (dataSnapshot.child(CommunityID).hasChild("starttime")) {
-                        String name = dataSnapshot.child(CommunityID).child("starttime").getValue().toString();
-                        CommunityStartTime = name;
-                        WriteFileData(CommunityStartTime+"\n");
-
-                    } else {
-                        CommunityStartTime = "Not Available\n";
-                        WriteFileData(CommunityStartTime);
-
-                    }
-
-                    if (dataSnapshot.child(CommunityID).hasChild("endtime")) {
-                        String name = dataSnapshot.child(CommunityID).child("endtime").getValue().toString();
-                        CommunityEndTime = name;
-                        WriteFileData(CommunityEndTime+"\n");
-
-
-                    } else {
-                        CommunityEndTime = "Not Available\n";
-                        WriteFileData(CommunityEndTime);
-
-                    }
-
-
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-
-                }
-            });
-
-        }
 
     }
 
@@ -1291,8 +1314,9 @@ public class MainActivity extends AppCompatActivity {
     private void ShowAllAlbums() {
 
         final List<String> MyCommunities = new ArrayList<>();
-        final List<CommunityModel> MyCommunityDetails = new ArrayList<>();
+        MyCommunityDetails = new ArrayList<>();
 
+        NoAlbumTextView.setVisibility(View.GONE);
         MainLoadingProgressBar.setVisibility(View.VISIBLE);
         MemoryRecyclerView.setVisibility(View.GONE);
 
@@ -1386,6 +1410,17 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
+                if(MyCommunityDetails.size()==0)
+                {
+                    NoAlbumTextView.setVisibility(View.VISIBLE);
+                }
+                else
+                {
+                    NoAlbumTextView.setVisibility(View.GONE);
+
+                }
+
+
                 Collections.reverse(MyCommunityDetails);
                 MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(),Ref,MyCommunityDetails);
                 MemoryRecyclerView.setAdapter(adapter);
@@ -1403,101 +1438,71 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    /*
-    private void ShowSearchResults(final String s) {
-
-
-        MainLoadingProgressBar.setVisibility(View.VISIBLE);
-        MemoryRecyclerView.setVisibility(View.GONE);
-
-        InDatabaseReference = FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUserID).child("Communities");
-        InDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                SearchedAlbums.clear();
-                MemoryRecyclerView.removeAllViews();
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    String AlbumName = snapshot.child("AlbumTitle").getValue().toString();
-                    if (AlbumName.toLowerCase().contains(s.toLowerCase())) {
-                        final String AlbumKey = snapshot.getKey();
-                        String AlbumCoverImage = snapshot.child("AlbumCoverImage").getValue().toString();
-                        String PostedByProfilePic = snapshot.child("PostedByProfilePic").getValue().toString();
-                        String AlbumDescription = snapshot.child("AlbumDescription").getValue().toString();
-                        String DateandTime = "";
-                        String User_ID = snapshot.child("User_ID").getValue().toString();
-                        String UserName = snapshot.child("UserName").getValue().toString();
-                        AlbumModel Album = new AlbumModel(AlbumCoverImage, AlbumDescription, AlbumName, PostedByProfilePic, DateandTime, UserName, User_ID);
-                        SearchedAlbums.add(Album);
-                        AlbumKeys.add(AlbumKey);
-                    }
-                }
-
-                if (SearchedAlbums.size() == 0) {
-                    NoAlbumTextView.setVisibility(View.VISIBLE);
-                }
-
-                Collections.reverse(SearchedAlbums);
-                Collections.reverse(AlbumKeys);
-
-                MainAdapterForSearch = new MainSearchAdapter(getApplicationContext(), SearchedAlbums, AlbumKeys, FirebaseDatabase.getInstance().getReference().child("Communities"));
-                MemoryRecyclerView.setAdapter(MainAdapterForSearch);
-                MainLoadingProgressBar.setVisibility(View.GONE);
-                MemoryRecyclerView.setVisibility(View.VISIBLE);
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-
-    }
-     */
-
     private void quitCloudAlbum(int x) {
+
+        final String  Offline_UserName = UserInfo[0];
+       try
+       {
+           OfflineCommunityID = UserInfo[1];
+       }
+       catch (IndexOutOfBoundsException e)
+       {
+           OfflineCommunityID="Not Available";
+       }
+
         Checker checker = new Checker(getApplicationContext());
-        if (checker.isConnectedToNet()) {
+        if (checker.isConnectedToNet() && !OfflineCommunityID.equals("Not Available")) {
 
             File dir = getFilesDir();
             File file = new File(dir, FILE_NAME);
             file.delete();
-            SyncUserDetails();
 
+            WriteFileData(Offline_UserName+"\n");
+            WriteFileData("Not Available");
 
-            if (checker.checkIfInAlbum()) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setCancelable(true);
-                builder.setTitle("Quit Cloud-Album");
-                builder.setMessage("Are you sure you want to quit the current community .");
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setCancelable(true);
+            builder.setTitle("Quit Cloud-Album");
+            builder.setMessage("Are you sure you want to quit the current community .");
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.dismiss();
 
-                    }
-                });
-                builder.setPositiveButton(" Yes ", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        QuitCloudAlbumProcess quitCloudAlbumProcess = new QuitCloudAlbumProcess(
-                                getApplicationContext(),
-                                MainActivity.this
+                }
+            });
+            builder.setPositiveButton(" Yes ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-                        );
-                        quitCloudAlbumProcess.execute();
-                    }
+                    FirebaseDatabase.getInstance().getReference().child("Users").child(CurrentUserID).child("live_community").removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
 
-                });
-                builder.create().show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "Sorry you don't participate in any Cloud-Album to quit",
-                        Toast.LENGTH_SHORT).show();
-            }
+                            if(task.isSuccessful())
+                            {
+                                Toast.makeText(getApplicationContext(),"Successfully left album.",Toast.LENGTH_SHORT).show();
+
+                            }
+                            else {
+                                Toast.makeText(getApplicationContext(),"Unable to quit current album.",Toast.LENGTH_SHORT).show();
+                            }
+
+                        }
+                    });
+                }
+
+            });
+            builder.create().show();
+
+        }
+        else if(!checker.isConnectedToNet())
+        {
+            Toast.makeText(getApplicationContext(), "Check internet connection.", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Unable to quit current album.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1835,22 +1840,17 @@ public class MainActivity extends AppCompatActivity {
 
                     if (task.isSuccessful()) {
                         final String downloadUrl = task.getResult().getDownloadUrl().toString();
-                        FirebaseDatabase.getInstance().getReference().child("Users")
-                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        FirebaseDatabase.getInstance().getReference()
                                 .child("Communities")
                                 .child(PostKeyForEdit)
-                                .child("AlbumCoverImage")
+                                .child("coverimage")
                                 .setValue(downloadUrl).addOnCompleteListener(new OnCompleteListener<Void>() {
                             @Override
                             public void onComplete(@NonNull Task<Void> task) {
                                 if (task.isSuccessful()) {
-                                    FirebaseDatabase.getInstance().getReference()
-                                            .child("Communities")
-                                            .child(PostKeyForEdit)
-                                            .child("AlbumCoverImage")
-                                            .setValue(downloadUrl);
                                     MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.INVISIBLE);
                                     Toast.makeText(MainActivity.this, "Successfully changed the Cover-Photo.", Toast.LENGTH_LONG).show();
+
 
                                 } else {
                                     MainBottomSheetAlbumCoverEditprogressBar.setVisibility(View.INVISIBLE);
@@ -1963,6 +1963,8 @@ public class MainActivity extends AppCompatActivity {
             holder.SetAlbumCover(getApplicationContext(), DetailsList.get(position).getCoverImage());
             holder.SetTitle(DetailsList.get(position).getTitle());
             holder.SetProfilePic(getApplicationContext(), DetailsList.get(position).getAdmin(),MainRef);
+            MainBottomSheetAlbumOwner.setText("Created By : " + getUserNameFromID(DetailsList.get(position).getAdmin()));
+
             holder.DetailsAlbumn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -2180,8 +2182,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String name = dataSnapshot.child("Name").getValue().toString();
-                ResultName = name;
+                if(dataSnapshot.hasChild("Name"))
+                {
+                    String name = dataSnapshot.child("Name").getValue().toString();
+                    ResultName = name;
+                }
+
             }
 
             @Override
