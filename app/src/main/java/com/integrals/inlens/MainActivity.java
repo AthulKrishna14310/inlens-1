@@ -69,6 +69,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
@@ -122,45 +123,35 @@ import com.integrals.inlens.Activities.SharedImageActivity;
 import com.integrals.inlens.Activities.WorkingIntroActivity;
 import com.integrals.inlens.Helper.CurrentDatabase;
 
-import com.integrals.inlens.Models.AlbumModel;
 import com.integrals.inlens.ViewHolder.AlbumViewHolder;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    /* 2 References and 5 string variables required max
+    /* 1 References and 5 string variables required max
 
-        1 UserRef
-        2 CommunityRef
-
-        3 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
-        4 Arraylist for storing structure
-        5 Arraylist for all user album details
-
-        6 OfflineCommunityID required while sync
+        1 Ref
+        2 String CurrentUserName,CurrentCommunityID,CommunityStartTime,CommunityEndTime;
+        3 Arraylist for storing structure
+        4 Arraylist for all user album details
+        5 OfflineCommunityID required while sync
      */
 
 
 
-    private DatabaseReference UserRef, CommunityRef;
     private String OfflineCommunityID="--",CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
     private String ResultName="Unknown";
     private String[] UserInfo;
     private List<CommunityModel> MyCommunityDetails;
-
     private static final String FILE_NAME = "UserInfo.ser";
-
     private RecyclerView MemoryRecyclerView;
-    private DatabaseReference InDatabaseReference;
+    private DatabaseReference Ref;
 
-    private String CommunityPostKey;
+
     private String CurrentUserID;
     private FirebaseAuth InAuthentication;
-    private FirebaseUser firebaseUser;
-    private DatabaseReference participantDatabaseReference;
     private ProgressBar MainLoadingProgressBar;
 
-    private DatabaseReference Ref;
 
     private String PostKeyForEdit;
     private Activity activity;
@@ -192,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
     //For Searching
     private static boolean SEARCH_IN_PROGRESS = false;
     private Menu MainMenu;
-    private List<AlbumModel> SearchedAlbums = new ArrayList<>();
     private List<String> AlbumKeys = new ArrayList<>();
     private Boolean QRCodeVisible = false;
     private int INTID = 3939;
@@ -212,8 +202,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView NoAlbumTextView;
 
     private Boolean SHOW_TOUR = false;
-    private NotificationManager ImageNotyManager;
-    private NotificationHelper ImageNotyHelper;
 
 
     private ImageButton MainMenuButton, MainSearchButton, MainBackButton;
@@ -221,9 +209,6 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout MainActionbar, MainSearchView;
     private BottomSheetBehavior MainCloudAlbumInfoBottomSheetBehavior;
     private View MainCloudInfoBottomSheetView;
-    String MemberName = "";
-    String MemberImage = "";
-    private AlbumStartingServices albumStartingServices;
 
 
     public MainActivity() {
@@ -235,12 +220,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         UserInfo = new String[4];
-
-        albumStartingServices = new AlbumStartingServices(getApplicationContext());
-
-
-        ImageNotyHelper = new NotificationHelper(getBaseContext());
-
         NoAlbumTextView = findViewById(R.id.nocloudalbumtextview);
         MainDimBackground = findViewById(R.id.main_dim_background);
         MainDimBackground.setVisibility(View.GONE);
@@ -266,7 +245,6 @@ public class MainActivity extends AppCompatActivity {
         RootForMainActivity = findViewById(R.id.root_for_main_activity);
 
 
-        participantDatabaseReference = FirebaseDatabase.getInstance().getReference();
         MemoryRecyclerView = (RecyclerView) findViewById(R.id.CloudAlbumRecyclerView);
         MemoryRecyclerView.setHasFixedSize(true);
         MemoryRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
@@ -575,8 +553,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
 
             } else {
-                firebaseUser = InAuthentication.getCurrentUser();
-                CurrentUserID = firebaseUser.getUid();
+                CurrentUserID =InAuthentication.getCurrentUser().getUid();
                 CheckForUserInfoSync();
                 QRCodeInit();
                 PermissionsInit();
@@ -608,6 +585,10 @@ public class MainActivity extends AppCompatActivity {
 
             if(UserInfo[1].equals("Not Available"))
             {
+                for(int i=0;i<UserInfo.length;i++)
+                {
+                    Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
+                }
                 Toast.makeText(getApplicationContext(),"Synchronizing User Information",Toast.LENGTH_SHORT).show();
                 SyncUserInfo();
             }
@@ -796,8 +777,6 @@ public class MainActivity extends AppCompatActivity {
 
         InAuthentication = FirebaseAuth.getInstance();
         Ref = FirebaseDatabase.getInstance().getReference();
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        CommunityRef = FirebaseDatabase.getInstance().getReference().child("Communities");
 
     }
 
@@ -921,16 +900,18 @@ public class MainActivity extends AppCompatActivity {
 
                             String UrlOrDComId = (DeepLink.toString().substring(DeepLink.toString().length() - 27)).substring(0, 26);
 
-                            SharedPreferences sharedPreferences2 = getSharedPreferences("InCommunity.pref", MODE_PRIVATE);
-                            if (sharedPreferences2.getBoolean("UsingCommunity::", false) == true) {
+                            String data = GetFileData();
+                            UserInfo = data.split("\n");
 
+                            if (UserInfo[1].equals("Not Available"))
+                            {
                                 Toast.makeText(getApplicationContext(), "Sorry,You can't participate in a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
-
-                            } else {
-                                Toast.makeText(getApplicationContext(), "Join " + UrlOrDComId.substring(6, 26), Toast.LENGTH_SHORT).show();
-                                AddToCloud(UrlOrDComId.substring(6, 26), progressBar);
                             }
-
+                            else
+                            {
+                                Toast.makeText(getApplicationContext(), "Join " + UrlOrDComId.substring(6, 26), Toast.LENGTH_SHORT).show();
+                                AddCommunityToUserRef(UrlOrDComId.substring(6, 26), progressBar);
+                            }
 
                         } else if (DeepLink.toString().contains("imagelink") && DeepLink.toString().contains("linkimage")) {
 
@@ -955,6 +936,42 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+    }
+
+    private void AddCommunityToUserRef(String substring, final ProgressBar progressBar) {
+
+        progressBar.setVisibility(View.VISIBLE);
+        String data = GetFileData();
+        UserInfo = data.split("\n");
+        Toast.makeText(getApplicationContext(), "Sub : "+substring, Toast.LENGTH_SHORT).show();
+
+        if(UserInfo[1].equals(substring))
+        {
+            progressBar.setVisibility(View.GONE);
+            Toast.makeText(getApplicationContext(), "Already a participant in this community.", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Ref.child("Users").child(CurrentUserID).child("Communities").child(substring).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
+                    if(task.isSuccessful())
+                    {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "Successfully joined new community.", Toast.LENGTH_SHORT).show();
+                        ShowAllAlbums();
+                    }
+                    else
+                    {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "There was an error while joining the new community. Please try again.", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+            });
+        }
+
     }
 
 
@@ -1089,7 +1106,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 AnimateFab();
-
+                String data = GetFileData();
+                UserInfo = data.split("\n");
                 if(UserInfo[1].equals("Not Available"))
                 {
                     startActivity(new Intent(MainActivity.this, QRCodeReader.class));
@@ -1509,7 +1527,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /*
     private void AddToCloud(String substring, final ProgressBar progressBar) {
+
         progressBar.setVisibility(View.VISIBLE);
         final DatabaseReference CommunityPhotographer;
         FirebaseAuth CommunityPhotographerAuthentication;
@@ -1631,9 +1651,6 @@ public class MainActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor1 = sharedPreferences1.edit();
                             editor1.putBoolean("ThisOwner::", false);
                             editor1.commit();
-                            albumStartingServices.initiateJobServices();
-                            albumStartingServices.intiateNotificationAtStart();
-
                         }
 
                     });
@@ -1655,6 +1672,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+     */
 
     public void GetStartedWithNewProfileImage() {
         CropImage.activity()
@@ -1766,11 +1785,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 ProfileDialog.dismiss();
                                                                 ProfileDialog.show();
 
-                                                                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                                                    ImageNotyHelper.cancelUploadDataNotification();
-                                                                } else {
-                                                                    ImageNotyManager.cancel(503);
-                                                                }
+
 
                                                             }
                                                         } else {
@@ -1778,11 +1793,7 @@ public class MainActivity extends AppCompatActivity {
                                                             ProfileDialog.setCancelable(true);
                                                             Toast.makeText(MainActivity.this, "FAILED TO SAVE TO DATABASE.MAKE SURE YOUR INTERNET IS CONNECTED AND TRY AGAIN.", Toast.LENGTH_LONG).show();
                                                             ProfileDialog.dismiss();
-                                                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                                                ImageNotyHelper.cancelUploadDataNotification();
-                                                            } else {
-                                                                ImageNotyManager.cancel(503);
-                                                            }
+
                                                         }
 
                                                     }
@@ -1792,11 +1803,7 @@ public class MainActivity extends AppCompatActivity {
                                         ProfileDialog.setCancelable(true);
                                         Toast.makeText(MainActivity.this, "FAILED TO UPLOAD THUMBNAIL", Toast.LENGTH_LONG).show();
                                         ProfileDialog.dismiss();
-                                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                            ImageNotyHelper.cancelUploadDataNotification();
-                                        } else {
-                                            ImageNotyManager.cancel(503);
-                                        }
+
                                     }
 
                                 }
@@ -1807,11 +1814,7 @@ public class MainActivity extends AppCompatActivity {
                             ProfileDialog.setCancelable(true);
                             Toast.makeText(MainActivity.this, "FAILED TO UPLOAD", Toast.LENGTH_LONG).show();
                             ProfileDialog.dismiss();
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                                ImageNotyHelper.cancelUploadDataNotification();
-                            } else {
-                                ImageNotyManager.cancel(503);
-                            }
+
                         }
                     }
 

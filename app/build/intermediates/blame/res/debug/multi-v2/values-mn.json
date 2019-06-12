@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/home/ej/Desktop/inlens_releases_beta/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-mn/values-mn.xml",
+            "outputFile": "/home/ej/Desktop/inlens/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-mn/values-mn.xml",
             "map": [
                 {
                     "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/values-mn/values-mn.xml",

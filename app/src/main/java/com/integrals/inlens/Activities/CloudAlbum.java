@@ -58,6 +58,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.integrals.inlens.Helper.CurrentDatabase;
+import com.integrals.inlens.MainActivity;
 import com.integrals.inlens.Models.Blog;
 import com.integrals.inlens.Models.SituationModel;
 import com.integrals.inlens.R;
@@ -66,6 +67,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -141,6 +147,7 @@ public class CloudAlbum extends AppCompatActivity {
     private String              PhotoListeHelperCommunityID;
     private DatabaseReference   PhotoListeHelperdatabaseReferencePhotoList;
     private GridImageAdapter    gridImageAdapter;
+    private static final String FILE_NAME = "UserInfo.ser";
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////|
     @Override
@@ -568,35 +575,83 @@ public class CloudAlbum extends AppCompatActivity {
         QRCodeImageView = QRCodeDialog.findViewById(R.id.QR_Display);
 
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-        try {
-            BitMatrix bitMatrix = multiFormatWriter.encode(PhotographerID, BarcodeFormat.QR_CODE, 200, 200);
-            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            QRCodeImageView.setImageBitmap(bitmap);
-        } catch (WriterException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-            QRCodeImageView.setVisibility(View.INVISIBLE);
-            textView.setText("You must be in an album to generate QR code");
-        } catch (NullPointerException e) {
-            QRCodeImageView.setVisibility(View.INVISIBLE);
-            textView.setText("You must be in an album to generate QR code");
+        String data = GetFileData();
+        final String UserInfo[] = data.split("\n");
 
+        if(UserInfo[1].equals("Not Available"))
+        {
+            Toast.makeText(getApplicationContext(), "You do not participate in any community.", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+
+            try {
+                BitMatrix bitMatrix = multiFormatWriter.encode(UserInfo[1], BarcodeFormat.QR_CODE, 200, 200);
+                BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
+                QRCodeImageView.setImageBitmap(bitmap);
+            } catch (WriterException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                QRCodeImageView.setVisibility(View.INVISIBLE);
+                textView.setText("You must be in an album to generate QR code");
+            } catch (NullPointerException e) {
+                QRCodeImageView.setVisibility(View.INVISIBLE);
+                textView.setText("You must be in an album to generate QR code");
+
+            }
         }
         InviteLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent SharingIntent = new Intent(Intent.ACTION_SEND);
                 SharingIntent.setType("text/plain");
-                String CommunityPostKey = QRCommunityID;
 
-                SharingIntent.putExtra(Intent.EXTRA_TEXT, "InLens Cloud-Album Invite Link \n\n" + GenarateDeepLinkForInvite(CommunityPostKey));
+                SharingIntent.putExtra(Intent.EXTRA_TEXT, "InLens Cloud-Album Invite Link \n\n" + GenarateDeepLinkForInvite(UserInfo[1]));
                 startActivity(SharingIntent);
 
             }
         });
     }
+
+    private String GetFileData() {
+
+
+        FileInputStream fileInputStream = null;
+        try {
+            fileInputStream = openFileInput(FILE_NAME);
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            StringBuilder builder = new StringBuilder();
+            String text;
+            while ((text = bufferedReader.readLine()) != null)
+            {
+                builder.append(text).append("\n");
+            }
+
+            return builder.toString();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        finally {
+            if(fileInputStream!=null)
+            {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "no data";
+    }
+
 
     private static String GenarateDeepLinkForInvite(String CommunityID) {
         return "https://inlens.page.link/?link=https://integrals.inlens.in/comid=" + CommunityID + "/&apn=com.integrals.inlens";

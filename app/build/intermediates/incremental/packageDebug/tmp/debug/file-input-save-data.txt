@@ -1,15 +1,15 @@
 #Internal package file, do not edit.
-#Fri Jun 07 20:30:08 IST 2019
-1.base=/home/ej/Desktop/inlens_releases_beta/app/build/intermediates/dex/debug/mergeExtDexDebug/out
-2.path=beep.mp3
+#Tue Jun 11 20:52:56 IST 2019
+1.base=/home/ej/Desktop/inlens/app/build/intermediates/merged_assets/debug/out
+2.path=classes.dex
 0.baseType=DIRECTORY
-2.base=/home/ej/Desktop/inlens_releases_beta/app/build/intermediates/merged_assets/debug/out
-2.set=ASSET
+2.base=/home/ej/Desktop/inlens/app/build/intermediates/dex/debug/mergeProjectDexDebug/out
+2.set=DEX
 1.baseType=DIRECTORY
 count=3
-1.set=DEX
+1.set=ASSET
 0.path=classes.dex
 0.set=DEX
-0.base=/home/ej/Desktop/inlens_releases_beta/app/build/intermediates/dex/debug/mergeProjectDexDebug/out
+0.base=/home/ej/Desktop/inlens/app/build/intermediates/dex/debug/mergeExtDexDebug/out
 2.baseType=DIRECTORY
-1.path=classes.dex
+1.path=beep.mp3
