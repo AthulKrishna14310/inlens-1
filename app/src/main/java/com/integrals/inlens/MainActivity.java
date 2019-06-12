@@ -139,16 +139,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private String OfflineCommunityID="--",CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+    private String CurrentUserID,OfflineCommunityID="--",CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
     private String ResultName="Unknown";
     private String[] UserInfo;
     private List<CommunityModel> MyCommunityDetails;
     private static final String FILE_NAME = "UserInfo.ser";
     private RecyclerView MemoryRecyclerView;
     private DatabaseReference Ref;
-
-
-    private String CurrentUserID;
     private FirebaseAuth InAuthentication;
     private ProgressBar MainLoadingProgressBar;
 
@@ -168,22 +165,15 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton MainBottomSheetAlbumCoverEditChangeuserImage;
     private TextView MainBottomSheetAlbumCoverEditDialogHeader;
     private static final int COVER_GALLERY_PICK = 78;
-
-    // Static boolean for cover and profile
-    // do not delete
     private static boolean COVER_CHANGE = false, PROFILE_CHANGE = false;
 
-    //For All ParticipantsBottomSheet
     private Dialog QRCodeDialog;
     private RecyclerView MainBottomSheetParticpantsBottomSheetDialogRecyclerView;
 
-    //For snackbar about Connectivity Info;
     private CoordinatorLayout RootForMainActivity;
 
     //For Searching
     private static boolean SEARCH_IN_PROGRESS = false;
-    private Menu MainMenu;
-    private List<String> AlbumKeys = new ArrayList<>();
     private Boolean QRCodeVisible = false;
     private int INTID = 3939;
     private SharedPreferences AlbumClickDetails;
@@ -252,6 +242,18 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseVariablesInit();
         CheckUserAuthentication();
+
+        MemoryRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && MainFab.getVisibility() == View.VISIBLE) {
+                    MainFab.hide();
+                } else if (dy < 0 && MainFab.getVisibility() != View.VISIBLE) {
+                    MainFab.show();
+                }
+            }
+        });
 
         if (QRCodeVisible) {
             new Handler().postDelayed(new Runnable() {
@@ -585,19 +587,9 @@ public class MainActivity extends AppCompatActivity {
 
             if(UserInfo[1].equals("Not Available"))
             {
-                for(int i=0;i<UserInfo.length;i++)
-                {
-                    Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
-                }
+
                 Toast.makeText(getApplicationContext(),"Synchronizing User Information",Toast.LENGTH_SHORT).show();
                 SyncUserInfo();
-            }
-            else
-            {
-                for(int i=0;i<UserInfo.length;i++)
-                {
-                    Toast.makeText(getApplicationContext(), i+" : "+UserInfo[i], Toast.LENGTH_SHORT).show();
-                }
             }
 
         }
@@ -938,7 +930,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void AddCommunityToUserRef(String substring, final ProgressBar progressBar) {
+    private void AddCommunityToUserRef(final String substring, final ProgressBar progressBar) {
 
         progressBar.setVisibility(View.VISIBLE);
         String data = GetFileData();
@@ -960,6 +952,7 @@ public class MainActivity extends AppCompatActivity {
                     {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(), "Successfully joined new community.", Toast.LENGTH_SHORT).show();
+                        Ref.child("Users").child(CurrentUserID).child("live_community").setValue(substring);
                         ShowAllAlbums();
                     }
                     else
