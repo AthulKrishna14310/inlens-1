@@ -27,16 +27,17 @@ anim dock_bottom_enter
 anim dock_bottom_exit
 anim fade_in
 anim fade_out
+anim gallery_fab_rotate_360
 anim layout_animation_fall_down
 anim main_fab_close
 anim main_fab_open
 anim main_fab_rotate_backward
 anim main_fab_rotate_forward
 anim rotate
+anim slide_back_up
 anim slide_bottom
-anim slide_bottom2
+anim slide_from_top
 anim slide_up
-anim slide_up2
 animator design_appbar_state_list_animator
 array com_google_android_gms_fonts_certs
 array com_google_android_gms_fonts_certs_dev
@@ -577,6 +578,7 @@ color background_floating_material_light
 color background_material_dark
 color background_material_light
 color black
+color brighdark
 color bright_foreground_disabled_material_dark
 color bright_foreground_disabled_material_light
 color bright_foreground_inverse_material_dark
@@ -598,6 +600,7 @@ color color_error
 color color_info
 color color_success
 color color_warning
+color colordimAccent
 color common_google_signin_btn_text_dark
 color common_google_signin_btn_text_dark_default
 color common_google_signin_btn_text_dark_disabled
@@ -625,6 +628,8 @@ color dim_foreground_disabled_material_dark
 color dim_foreground_disabled_material_light
 color dim_foreground_material_dark
 color dim_foreground_material_light
+color dimdark
+color dimwhite
 color error_color_material
 color foreground_material_dark
 color foreground_material_light
@@ -1289,6 +1294,9 @@ id fitXY
 id fixed
 id floatingstartupload
 id forever
+id gallery_item_imageview
+id gallery_recyclerview
+id gallery_refresh_fab
 id ghost_view
 id glide_custom_view_target_tag
 id gone
@@ -1569,6 +1577,7 @@ layout ac_cloud_album
 layout activity_attach_situation
 layout activity_create_cloud_album
 layout activity_gallery_main
+layout activity_inlens_gallery
 layout activity_intro
 layout activity_issue
 layout activity_login
@@ -1609,6 +1618,7 @@ layout design_navigation_menu_item
 layout design_text_input_password_icon
 layout event_type_layout
 layout fragment_barcode_reader
+layout gallery_item_card
 layout gallery_list_row
 layout issue_create_layout
 layout issue_item

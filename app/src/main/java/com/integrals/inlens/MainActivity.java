@@ -26,6 +26,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -85,6 +86,7 @@ import com.integrals.inlens.AlbumProcedures.AlbumStartingServices;
 import com.integrals.inlens.AlbumProcedures.Checker;
 import com.integrals.inlens.Helper.NotificationHelper;
 import com.integrals.inlens.Helper.UploadDatabaseHelper;
+import com.integrals.inlens.InlensGallery.InlensGalleryActivity;
 import com.integrals.inlens.Models.CommunityModel;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.squareup.picasso.Callback;
@@ -138,9 +140,8 @@ public class MainActivity extends AppCompatActivity {
      */
 
 
-
-    private String CurrentUserID,OfflineCommunityID="--",CommunityID="--",CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
-    private String ResultName="Unknown";
+    private String CurrentUserID, OfflineCommunityID = "--", CommunityID = "--", CurrentUserName = "--", CurrentCommunityID = "--", CommunityStartTime = "--", CommunityEndTime = "--";
+    private String ResultName = "Unknown";
     private String[] UserInfo;
     private List<CommunityModel> MyCommunityDetails;
     private static final String FILE_NAME = "UserInfo.ser";
@@ -178,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     private int INTID = 3939;
     private SharedPreferences AlbumClickDetails;
     private FloatingActionButton MainFab, CreateAlbumFab, ScanQrFab;
-    private Animation FabOpen, FabClose, FabRotateForward, FabRotateBackward, AlbumCardOpen, AlbumCardClose;
+    private Animation FabRotateForward, FabRotateBackward, AlbumCardOpen, AlbumCardClose;
     private boolean isOpen = false;
     private ImageButton MainDimBackground;
 
@@ -199,6 +200,7 @@ public class MainActivity extends AppCompatActivity {
     private RelativeLayout MainActionbar, MainSearchView;
     private BottomSheetBehavior MainCloudAlbumInfoBottomSheetBehavior;
     private View MainCloudInfoBottomSheetView;
+    private CardView MainToolbar;
 
 
     public MainActivity() {
@@ -213,6 +215,9 @@ public class MainActivity extends AppCompatActivity {
         NoAlbumTextView = findViewById(R.id.nocloudalbumtextview);
         MainDimBackground = findViewById(R.id.main_dim_background);
         MainDimBackground.setVisibility(View.GONE);
+
+        MainToolbar = findViewById(R.id.mainactivity_toolbar);
+
         MainMenuButton = findViewById(R.id.mainactivity_actionbar_menubutton);
         MainSearchButton = findViewById(R.id.mainactivity_actionbar_searchbutton);
         MainActionbar = findViewById(R.id.mainactivity_actionbar_relativelayout);
@@ -247,11 +252,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+
                 if (dy > 0 && MainFab.getVisibility() == View.VISIBLE) {
+
                     MainFab.hide();
+                    MainFab.setEnabled(false);
                 } else if (dy < 0 && MainFab.getVisibility() != View.VISIBLE) {
                     MainFab.show();
+                    MainFab.setEnabled(true);
                 }
+
             }
         });
 
@@ -299,7 +309,7 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             switch (which) {
                                 case R.id.upload_activity:
-                                    startActivity(new Intent(MainActivity.this, com.integrals.inlens.ServiceImplementation.InLensGallery.MainActivity.class));
+                                    startActivity(new Intent(MainActivity.this, InlensGalleryActivity.class));
                                     break;
                                 case R.id.profile_pic:
                                     DatabaseReference DbRef = FirebaseDatabase.getInstance().getReference().child("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -409,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
 
                 SEARCH_IN_PROGRESS = true;
 
-                final List<CommunityModel> CommunitySearchDetails=new ArrayList<>();
+                final List<CommunityModel> CommunitySearchDetails = new ArrayList<>();
 
                 MainActionbar.clearAnimation();
                 MainActionbar.setAnimation(AnimationUtils.loadAnimation(MainActivity.this, R.anim.fade_out));
@@ -446,24 +456,19 @@ public class MainActivity extends AppCompatActivity {
                             CommunitySearchDetails.clear();
                             MemoryRecyclerView.setVisibility(View.VISIBLE);
                             NoAlbumTextView.setVisibility(View.GONE);
-                            for(int i=0;i<MyCommunityDetails.size();i++)
-                            {
-                                if(MyCommunityDetails.get(i).getTitle().toLowerCase().contains(editable.toString().toLowerCase()))
-                                {
+                            for (int i = 0; i < MyCommunityDetails.size(); i++) {
+                                if (MyCommunityDetails.get(i).getTitle().toLowerCase().contains(editable.toString().toLowerCase())) {
                                     CommunitySearchDetails.add(MyCommunityDetails.get(i));
                                 }
                             }
 
-                            if(CommunitySearchDetails.size()==0)
-                            {
+                            if (CommunitySearchDetails.size() == 0) {
                                 NoAlbumTextView.setVisibility(View.VISIBLE);
-                            }
-                            else
-                            {
+                            } else {
                                 NoAlbumTextView.setVisibility(View.GONE);
                             }
 
-                            MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(),Ref,CommunitySearchDetails);
+                            MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(), Ref, CommunitySearchDetails);
                             MemoryRecyclerView.setAdapter(adapter);
 
                         } else {
@@ -476,7 +481,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
 
 
         MainBackButton.setOnClickListener(new View.OnClickListener() {
@@ -508,9 +512,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (isOpen) {
+                if (MainDimBackground.isShown()) {
                     CloseFabs();
-                    isOpen = false;
                 }
                 if (MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED ||
                         MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
@@ -555,7 +558,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
 
             } else {
-                CurrentUserID =InAuthentication.getCurrentUser().getUid();
+                CurrentUserID = InAuthentication.getCurrentUser().getUid();
                 CheckForUserInfoSync();
                 QRCodeInit();
                 PermissionsInit();
@@ -579,16 +582,13 @@ public class MainActivity extends AppCompatActivity {
         if (!FileExist()) {
 
             SyncUserInfo();
-        }
-        else
-        {
+        } else {
             String data = GetFileData();
             UserInfo = data.split("\n");
 
-            if(UserInfo[1].equals("Not Available"))
-            {
+            if (UserInfo[1].equals("Not Available")) {
 
-                Toast.makeText(getApplicationContext(),"Synchronizing User Information",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Synchronizing User Information", Toast.LENGTH_SHORT).show();
                 SyncUserInfo();
             }
 
@@ -598,19 +598,17 @@ public class MainActivity extends AppCompatActivity {
 
     private void WriteFileData(String newData) {
 
-        FileOutputStream fileOutputStream =null;
+        FileOutputStream fileOutputStream = null;
 
         try {
-            fileOutputStream = openFileOutput(FILE_NAME,MODE_APPEND);
+            fileOutputStream = openFileOutput(FILE_NAME, MODE_APPEND);
             fileOutputStream.write(newData.getBytes());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
-            if(fileOutputStream!=null)
-            {
+        } finally {
+            if (fileOutputStream != null) {
                 try {
                     fileOutputStream.close();
                 } catch (IOException e) {
@@ -630,8 +628,7 @@ public class MainActivity extends AppCompatActivity {
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
             StringBuilder builder = new StringBuilder();
             String text;
-            while ((text = bufferedReader.readLine()) != null)
-            {
+            while ((text = bufferedReader.readLine()) != null) {
                 builder.append(text).append("\n");
             }
 
@@ -641,11 +638,8 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-
-        finally {
-            if(fileInputStream!=null)
-            {
+        } finally {
+            if (fileInputStream != null) {
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
@@ -664,10 +658,8 @@ public class MainActivity extends AppCompatActivity {
             fileInputStream = openFileInput(FILE_NAME);
         } catch (FileNotFoundException e) {
             return false;
-        }
-        finally {
-            if(fileInputStream!=null)
-            {
+        } finally {
+            if (fileInputStream != null) {
                 try {
                     fileInputStream.close();
                 } catch (IOException e) {
@@ -682,19 +674,14 @@ public class MainActivity extends AppCompatActivity {
 
     private void SyncUserInfo() {
 
-        try
-        {
+        try {
             String data = GetFileData();
             UserInfo = data.split("\n");
             OfflineCommunityID = UserInfo[1];
-        }
-        catch (IndexOutOfBoundsException e)
-        {
-            OfflineCommunityID="Not Available";
+        } catch (IndexOutOfBoundsException e) {
+            OfflineCommunityID = "Not Available";
 
         }
-
-
 
 
         Ref.addValueEventListener(new ValueEventListener() {
@@ -702,7 +689,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child("Users").child(CurrentUserID).hasChild("Name")) {
                     String name = dataSnapshot.child("Users").child(CurrentUserID).child("Name").getValue().toString();
-                    CurrentUserName = name+"\n";
+                    CurrentUserName = name + "\n";
 
                 } else {
                     CurrentUserName = "Not Available\n";
@@ -711,19 +698,19 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (dataSnapshot.child("Users").child(CurrentUserID).hasChild("live_community")) {
                     String name = dataSnapshot.child("Users").child(CurrentUserID).child("live_community").getValue().toString();
-                    CurrentCommunityID = name+"\n";
-                    CommunityID=name.trim();
+                    CurrentCommunityID = name + "\n";
+                    CommunityID = name.trim();
 
 
                 } else {
                     CurrentCommunityID = "Not Available\n";
-                    CommunityID="Not Available";
+                    CommunityID = "Not Available";
 
                 }
 
                 if (dataSnapshot.child("Communities").child(CommunityID).hasChild("starttime")) {
                     String name = dataSnapshot.child("Communities").child(CommunityID).child("starttime").getValue().toString();
-                    CommunityStartTime = name+"\n";
+                    CommunityStartTime = name + "\n";
 
                 } else {
                     CommunityStartTime = "Not Available\n";
@@ -732,7 +719,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (dataSnapshot.child("Communities").child(CommunityID).hasChild("endtime")) {
                     String name = dataSnapshot.child("Communities").child(CommunityID).child("endtime").getValue().toString();
-                    CommunityEndTime = name+"\n";
+                    CommunityEndTime = name + "\n";
 
 
                 } else {
@@ -740,8 +727,7 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                if(!CommunityID.equals(OfflineCommunityID))
-                {
+                if (!CommunityID.equals(OfflineCommunityID)) {
                     File dir = getFilesDir();
                     File file = new File(dir, FILE_NAME);
                     file.delete();
@@ -895,12 +881,9 @@ public class MainActivity extends AppCompatActivity {
                             String data = GetFileData();
                             UserInfo = data.split("\n");
 
-                            if (UserInfo[1].equals("Not Available"))
-                            {
+                            if (UserInfo[1].equals("Not Available")) {
                                 Toast.makeText(getApplicationContext(), "Sorry,You can't participate in a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
-                            }
-                            else
-                            {
+                            } else {
                                 Toast.makeText(getApplicationContext(), "Join " + UrlOrDComId.substring(6, 26), Toast.LENGTH_SHORT).show();
                                 AddCommunityToUserRef(UrlOrDComId.substring(6, 26), progressBar);
                             }
@@ -935,28 +918,22 @@ public class MainActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         String data = GetFileData();
         UserInfo = data.split("\n");
-        Toast.makeText(getApplicationContext(), "Sub : "+substring, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Sub : " + substring, Toast.LENGTH_SHORT).show();
 
-        if(UserInfo[1].equals(substring))
-        {
+        if (UserInfo[1].equals(substring)) {
             progressBar.setVisibility(View.GONE);
             Toast.makeText(getApplicationContext(), "Already a participant in this community.", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        } else {
             Ref.child("Users").child(CurrentUserID).child("Communities").child(substring).setValue(ServerValue.TIMESTAMP).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
 
-                    if(task.isSuccessful())
-                    {
+                    if (task.isSuccessful()) {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(), "Successfully joined new community.", Toast.LENGTH_SHORT).show();
                         Ref.child("Users").child(CurrentUserID).child("live_community").setValue(substring);
                         ShowAllAlbums();
-                    }
-                    else
-                    {
+                    } else {
                         progressBar.setVisibility(View.GONE);
                         Toast.makeText(getApplicationContext(), "There was an error while joining the new community. Please try again.", Toast.LENGTH_SHORT).show();
                     }
@@ -1076,11 +1053,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void FabAnimationAndButtonsInit() {
 
-        AlbumCardOpen = AnimationUtils.loadAnimation(this, R.anim.album_card_open);
-        AlbumCardClose = AnimationUtils.loadAnimation(this, R.anim.album_card_close);
-
-        FabOpen = AnimationUtils.loadAnimation(this, R.anim.main_fab_open);
-        FabClose = AnimationUtils.loadAnimation(this, R.anim.main_fab_close);
         FabRotateForward = AnimationUtils.loadAnimation(this, R.anim.main_fab_rotate_forward);
         FabRotateBackward = AnimationUtils.loadAnimation(this, R.anim.main_fab_rotate_backward);
 
@@ -1101,12 +1073,9 @@ public class MainActivity extends AppCompatActivity {
                 AnimateFab();
                 String data = GetFileData();
                 UserInfo = data.split("\n");
-                if(UserInfo[1].equals("Not Available"))
-                {
+                if (UserInfo[1].equals("Not Available")) {
                     startActivity(new Intent(MainActivity.this, QRCodeReader.class));
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getApplicationContext(), "Sorry,You can't scan a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
                 }
 
@@ -1119,12 +1088,9 @@ public class MainActivity extends AppCompatActivity {
                 AnimateFab();
                 String data = GetFileData();
                 UserInfo = data.split("\n");
-                if(UserInfo[1].equals("Not Available"))
-                {
+                if (UserInfo[1].equals("Not Available")) {
                     startActivity(new Intent(MainActivity.this, CreateCloudAlbum.class));
-                }
-                else
-                {
+                } else {
                     Toast.makeText(getApplicationContext(), "Sorry,You can't scan a new Cloud-Album before you quit the current one.", Toast.LENGTH_LONG).show();
                 }
             }
@@ -1132,75 +1098,70 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void CloseFabs() {
-        if (MainDimBackground.isShown()) {
-
-            MainDimBackground.setVisibility(View.GONE);
-            ScanQrFab.clearAnimation();
-            ScanQrFab.setAnimation(FabClose);
-            ScanQrFab.getAnimation().start();
-
-            CreateAlbumFab.clearAnimation();
-            CreateAlbumFab.setAnimation(FabClose);
-            CreateAlbumFab.getAnimation().start();
-
-            CreateAlbumFab.setVisibility(View.INVISIBLE);
-            ScanQrFab.setVisibility(View.INVISIBLE);
-
-            MainFab.clearAnimation();
-            MainFab.setAnimation(FabRotateBackward);
-            MainFab.getAnimation().start();
-        }
-        isOpen = false;
-    }
-
     private void AnimateFab() {
 
-        if (isOpen) {
-
-            MainDimBackground.setVisibility(View.GONE);
-            ScanQrFab.clearAnimation();
-            ScanQrFab.setAnimation(FabClose);
-            ScanQrFab.getAnimation().start();
+        if (MainDimBackground.isShown()) {
 
             CreateAlbumFab.clearAnimation();
-            CreateAlbumFab.setAnimation(FabClose);
+            CreateAlbumFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_close));
             CreateAlbumFab.getAnimation().start();
+            CreateAlbumFab.hide();
 
+            ScanQrFab.clearAnimation();
+            ScanQrFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_close));
+            ScanQrFab.getAnimation().start();
+            ScanQrFab.hide();
 
-            CreateAlbumFab.setVisibility(View.INVISIBLE);
-            ScanQrFab.setVisibility(View.INVISIBLE);
+            MainDimBackground.setVisibility(View.GONE);
 
             MainFab.clearAnimation();
             MainFab.setAnimation(FabRotateBackward);
             MainFab.getAnimation().start();
 
-            isOpen = false;
         } else {
-
-            ScanQrFab.clearAnimation();
-            ScanQrFab.setAnimation(FabOpen);
-            ScanQrFab.getAnimation().start();
-
-            CreateAlbumFab.clearAnimation();
-            CreateAlbumFab.setAnimation(FabOpen);
-            CreateAlbumFab.getAnimation().start();
-
-
-            CreateAlbumFab.setVisibility(View.VISIBLE);
-            ScanQrFab.setVisibility(View.VISIBLE);
-            //MainScanQrTxtview.setVisibility(View.VISIBLE);
-            //MainCreateAlbumTxtview.setVisibility(View.VISIBLE);
 
             MainFab.clearAnimation();
             MainFab.setAnimation(FabRotateForward);
             MainFab.getAnimation().start();
-            isOpen = true;
 
             MainDimBackground.setVisibility(View.VISIBLE);
 
+            CreateAlbumFab.clearAnimation();
+            CreateAlbumFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_open));
+            CreateAlbumFab.getAnimation().start();
+            CreateAlbumFab.show();
+
+            ScanQrFab.clearAnimation();
+            ScanQrFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_open));
+            ScanQrFab.getAnimation().start();
+            ScanQrFab.show();
+
         }
 
+    }
+
+    private void CloseFabs() {
+
+        if(MainDimBackground.isShown())
+        {
+
+            CreateAlbumFab.clearAnimation();
+            CreateAlbumFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_close));
+            CreateAlbumFab.getAnimation().start();
+            CreateAlbumFab.hide();
+
+            ScanQrFab.clearAnimation();
+            ScanQrFab.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.main_fab_close));
+            ScanQrFab.getAnimation().start();
+            ScanQrFab.hide();
+
+            MainDimBackground.setVisibility(View.GONE);
+
+            MainFab.clearAnimation();
+            MainFab.setAnimation(FabRotateBackward);
+            MainFab.getAnimation().start();
+
+        }
     }
 
     private void PermissionsInit() {
@@ -1284,17 +1245,14 @@ public class MainActivity extends AppCompatActivity {
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    String name="Unknown",image="default";
+                    String name = "Unknown", image = "default";
 
                     String key = snapshot.getKey();
-                    if(MemberUIDList.contains(key))
-                    {
-                        if(snapshot.hasChild("Name"))
-                        {
+                    if (MemberUIDList.contains(key)) {
+                        if (snapshot.hasChild("Name")) {
                             name = snapshot.child("Name").getValue().toString();
                         }
-                        if(snapshot.hasChild("Profile_picture"))
-                        {
+                        if (snapshot.hasChild("Profile_picture")) {
                             image = snapshot.child("Profile_picture").getValue().toString();
                         }
                         MemberImageList.add(image);
@@ -1360,62 +1318,51 @@ public class MainActivity extends AppCompatActivity {
 
         Ref.child("Communities").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot)
-            {
+            public void onDataChange(DataSnapshot dataSnapshot) {
                 MyCommunityDetails.clear();
                 MemoryRecyclerView.removeAllViews();
 
-                for(DataSnapshot snapshot : dataSnapshot.getChildren())
-                {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    String admin="default",coverimage="default",description="default",endtime="default",starttime="default",status="default",title="default",type="default";
+                    String admin = "default", coverimage = "default", description = "default", endtime = "default", starttime = "default", status = "default", title = "default", type = "default";
 
                     String key = snapshot.getKey();
-                    if(MyCommunities.contains(key))
-                    {
+                    if (MyCommunities.contains(key)) {
 
 
-                        if(snapshot.hasChild("admin"))
-                        {
+                        if (snapshot.hasChild("admin")) {
                             admin = snapshot.child("admin").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("coverimage"))
-                        {
+                        if (snapshot.hasChild("coverimage")) {
                             coverimage = snapshot.child("coverimage").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("endtime"))
-                        {
+                        if (snapshot.hasChild("endtime")) {
                             endtime = snapshot.child("endtime").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("description"))
-                        {
+                        if (snapshot.hasChild("description")) {
                             description = snapshot.child("description").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("starttime"))
-                        {
+                        if (snapshot.hasChild("starttime")) {
                             starttime = snapshot.child("starttime").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("status"))
-                        {
+                        if (snapshot.hasChild("status")) {
                             status = snapshot.child("status").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("title"))
-                        {
+                        if (snapshot.hasChild("title")) {
                             title = snapshot.child("title").getValue().toString();
 
                         }
-                        if(snapshot.hasChild("type"))
-                        {
+                        if (snapshot.hasChild("type")) {
                             type = snapshot.child("type").getValue().toString();
 
                         }
-                        CommunityModel model = new CommunityModel(title,description,status,starttime,endtime,snapshot.child("participants").getRef(),type,coverimage,admin,key);
+                        CommunityModel model = new CommunityModel(title, description, status, starttime, endtime, snapshot.child("participants").getRef(), type, coverimage, admin, key);
                         MyCommunityDetails.add(model);
 
                     }
@@ -1423,19 +1370,16 @@ public class MainActivity extends AppCompatActivity {
 
                 }
 
-                if(MyCommunityDetails.size()==0)
-                {
+                if (MyCommunityDetails.size() == 0) {
                     NoAlbumTextView.setVisibility(View.VISIBLE);
-                }
-                else
-                {
+                } else {
                     NoAlbumTextView.setVisibility(View.GONE);
 
                 }
 
 
                 Collections.reverse(MyCommunityDetails);
-                MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(),Ref,MyCommunityDetails);
+                MainSearchAdapter adapter = new MainSearchAdapter(getApplicationContext(), Ref, MyCommunityDetails);
                 MemoryRecyclerView.setAdapter(adapter);
             }
 
@@ -1453,15 +1397,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void quitCloudAlbum(int x) {
 
-        final String  Offline_UserName = UserInfo[0];
-       try
-       {
-           OfflineCommunityID = UserInfo[1];
-       }
-       catch (IndexOutOfBoundsException e)
-       {
-           OfflineCommunityID="Not Available";
-       }
+        final String Offline_UserName = UserInfo[0];
+        try {
+            OfflineCommunityID = UserInfo[1];
+        } catch (IndexOutOfBoundsException e) {
+            OfflineCommunityID = "Not Available";
+        }
 
         Checker checker = new Checker(getApplicationContext());
         if (checker.isConnectedToNet() && !OfflineCommunityID.equals("Not Available")) {
@@ -1470,7 +1411,7 @@ public class MainActivity extends AppCompatActivity {
             File file = new File(dir, FILE_NAME);
             file.delete();
 
-            WriteFileData(Offline_UserName+"\n");
+            WriteFileData(Offline_UserName + "\n");
             WriteFileData("Not Available");
 
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -1492,13 +1433,11 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            if(task.isSuccessful())
-                            {
-                                Toast.makeText(getApplicationContext(),"Successfully left album.",Toast.LENGTH_SHORT).show();
+                            if (task.isSuccessful()) {
+                                Toast.makeText(getApplicationContext(), "Successfully left album.", Toast.LENGTH_SHORT).show();
 
-                            }
-                            else {
-                                Toast.makeText(getApplicationContext(),"Unable to quit current album.",Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getApplicationContext(), "Unable to quit current album.", Toast.LENGTH_SHORT).show();
                             }
 
                         }
@@ -1508,13 +1447,9 @@ public class MainActivity extends AppCompatActivity {
             });
             builder.create().show();
 
-        }
-        else if(!checker.isConnectedToNet())
-        {
+        } else if (!checker.isConnectedToNet()) {
             Toast.makeText(getApplicationContext(), "Check internet connection.", Toast.LENGTH_SHORT).show();
-        }
-        else
-        {
+        } else {
             Toast.makeText(getApplicationContext(), "Not a participant in any album.", Toast.LENGTH_SHORT).show();
         }
     }
@@ -1779,7 +1714,6 @@ public class MainActivity extends AppCompatActivity {
                                                                 ProfileDialog.show();
 
 
-
                                                             }
                                                         } else {
                                                             progressBar.setVisibility(View.GONE);
@@ -1928,7 +1862,7 @@ public class MainActivity extends AppCompatActivity {
 
         } else if (MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED || MainCloudAlbumInfoBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
             MainCloudAlbumInfoBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        } else if (isOpen) {
+        } else if (MainDimBackground.isShown()) {
             CloseFabs();
             isOpen = false;
         } else {
@@ -1960,7 +1894,7 @@ public class MainActivity extends AppCompatActivity {
 
             holder.SetAlbumCover(getApplicationContext(), DetailsList.get(position).getCoverImage());
             holder.SetTitle(DetailsList.get(position).getTitle());
-            holder.SetProfilePic(getApplicationContext(), DetailsList.get(position).getAdmin(),MainRef);
+            holder.SetProfilePic(getApplicationContext(), DetailsList.get(position).getAdmin(), MainRef);
             MainBottomSheetAlbumOwner.setText("Created By : " + getUserNameFromID(DetailsList.get(position).getAdmin()));
 
             holder.DetailsAlbumn.setOnClickListener(new View.OnClickListener() {
@@ -1970,10 +1904,11 @@ public class MainActivity extends AppCompatActivity {
 
                     CloseFabs();
 
+
                     DisplayAllParticipantsAsBottomSheet(DetailsList.get(position).getCommunityID(), FirebaseDatabase.getInstance().getReference());
 
 
-                    MainBottomSheetAlbumTitle.setText(String.format("Album Title : %s",DetailsList.get(position).getTitle()));
+                    MainBottomSheetAlbumTitle.setText(String.format("Album Title : %s", DetailsList.get(position).getTitle()));
                     MainBottomSheetAlbumDesc.setText(String.format("Album About : %s", DetailsList.get(position).getDescription()));
                     MainBottomSheetAlbumOwner.setText("Created By : " + getUserNameFromID(DetailsList.get(position).getAdmin()));
 
@@ -2015,8 +1950,7 @@ public class MainActivity extends AppCompatActivity {
                                         String DateEnd = "Data not available";
                                         MainBottomSheetAlbumEndTime.setText(String.format("Album End Time : %s", DateEnd));
                                     }
-                                }
-                                else {
+                                } else {
                                     if (dataSnapshot.hasChild("endtime")) {
                                         String timestamp = dataSnapshot.child("endtime").getValue().toString();
                                         long time = Long.parseLong(timestamp);
@@ -2138,6 +2072,7 @@ public class MainActivity extends AppCompatActivity {
 
                     CloseFabs();
 
+
                     final String PostKey = DetailsList.get(position).getCommunityID();
                     if (!TextUtils.isEmpty(PostKey)) {
                         try {
@@ -2180,8 +2115,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(dataSnapshot.hasChild("Name"))
-                {
+                if (dataSnapshot.hasChild("Name")) {
                     String name = dataSnapshot.child("Name").getValue().toString();
                     ResultName = name;
                 }

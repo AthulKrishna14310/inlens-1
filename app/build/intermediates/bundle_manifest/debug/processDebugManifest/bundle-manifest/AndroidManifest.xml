@@ -58,6 +58,7 @@
         android:supportsRtl="true"
         android:testOnly="true"
         android:theme="@style/AppTheme" >
+        <activity android:name="com.integrals.inlens.InlensGallery.InlensGalleryActivity" />
         <activity android:name="com.integrals.inlens.Activities.WorkingIntroActivity" />
         <activity android:name="com.integrals.inlens.Activities.IssueActivity" />
         <activity

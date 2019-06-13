@@ -16,12 +16,12 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/225f70d8d7b2182f6daf66a1fc8a032a/res/layout/notification_media_cancel_action.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/mipmap-xhdpi_ic_launcher.png.flat",
         "source": "/home/ej/Desktop/inlens/app/src/main/res/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_list_selector_disabled_holo_dark.9.png.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-hdpi-v4/abc_list_selector_disabled_holo_dark.9.png"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xxxhdpi-v4_ic_info_outline_white_24dp.png.flat",
@@ -40,12 +40,12 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/color/abc_hint_foreground_material_dark.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_ic_star_half_black_48dp.png.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-xhdpi-v4/abc_ic_star_half_black_48dp.png"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_abc_ic_commit_search_api_mtrl_alpha.png.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-hdpi-v4/abc_ic_commit_search_api_mtrl_alpha.png"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_text_select_handle_middle_mtrl_light.png.flat",
@@ -68,12 +68,12 @@
         "source": "/home/ej/Desktop/inlens/app/src/main/res/layout/list_item.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_abc_tooltip_exit.xml.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/anim/abc_tooltip_exit.xml"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable_abc_btn_radio_material.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable/abc_btn_radio_material.xml"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_abc_tooltip_exit.xml.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/anim/abc_tooltip_exit.xml"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_abc_tooltip_enter.xml.flat",
@@ -92,12 +92,12 @@
         "source": "/home/ej/Desktop/inlens/app/src/main/res/drawable/ic_fab_create_album.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-ldrtl-xxxhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_abc_list_menu_item_checkbox.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/layout/abc_list_menu_item_checkbox.xml"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-ldrtl-xxxhdpi-v17_abc_spinner_mtrl_am_alpha.9.png.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-ldrtl-xxxhdpi-v17/abc_spinner_mtrl_am_alpha.9.png"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_notification_template_part_time.xml.flat",
@@ -108,32 +108,32 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/98dee76c551ffaa9576852f7bc6afe3e/res/drawable-xhdpi-v4/bs_ic_clear_light.png"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_notification_bg_low_normal.9.png.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/drawable-hdpi-v4/notification_bg_low_normal.9.png"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable_common_google_signin_btn_icon_dark.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/8a5756a2e82a0068ace46f817d21263c/res/drawable/common_google_signin_btn_icon_dark.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable_add_location.png.flat",
-        "source": "/home/ej/Desktop/inlens/app/src/main/res/drawable/add_location.png"
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-hdpi-v4_notification_bg_low_normal.9.png.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/drawable-hdpi-v4/notification_bg_low_normal.9.png"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_abc_switch_track_mtrl_alpha.9.png.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-xxhdpi-v4/abc_switch_track_mtrl_alpha.9.png"
     },
     {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable_add_location.png.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/drawable/add_location.png"
+    },
+    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_activity_intro.xml.flat",
         "source": "/home/ej/Desktop/inlens/app/src/main/res/layout/activity_intro.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/color-v23_abc_tint_btn_checkable.xml.flat",
-        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/color-v23/abc_tint_btn_checkable.xml"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-mdpi_ic_launcher_foreground.png.flat",
         "source": "/home/ej/Desktop/inlens/app/build/generated/res/pngs/debug/drawable-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/color-v23_abc_tint_btn_checkable.xml.flat",
+        "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/color-v23/abc_tint_btn_checkable.xml"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_abc_popup_exit.xml.flat",
@@ -532,10 +532,6 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/225f70d8d7b2182f6daf66a1fc8a032a/res/layout/notification_template_media.xml"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_slide_bottom2.xml.flat",
-        "source": "/home/ej/Desktop/inlens/app/src/main/res/anim/slide_bottom2.xml"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_design_navigation_item_subheader.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/4e82dccb9ec0f9d06351b94a466f4ae3/res/layout/design_navigation_item_subheader.xml"
     },
@@ -650,6 +646,10 @@
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xxhdpi-v4_common_google_signin_btn_text_light_normal_background.9.png.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/8a5756a2e82a0068ace46f817d21263c/res/drawable-xxhdpi-v4/common_google_signin_btn_text_light_normal_background.9.png"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_activity_inlens_gallery.xml.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/layout/activity_inlens_gallery.xml"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_abc_slide_in_top.xml.flat",
@@ -1070,6 +1070,10 @@
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/drawable-xhdpi-v4_abc_scrubber_control_off_mtrl_alpha.png.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-xhdpi-v4/abc_scrubber_control_off_mtrl_alpha.png"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_gallery_item_card.xml.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/layout/gallery_item_card.xml"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_abc_popup_menu_header_item_layout.xml.flat",
@@ -1908,6 +1912,10 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-hdpi-v4/abc_scrubber_track_mtrl_alpha.9.png"
     },
     {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_slide_from_top.xml.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/anim/slide_from_top.xml"
+    },
+    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_notification_template_part_chronometer.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/layout/notification_template_part_chronometer.xml"
     },
@@ -2272,10 +2280,6 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/drawable-xxxhdpi-v4/abc_ic_star_half_black_36dp.png"
     },
     {
-        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_slide_up2.xml.flat",
-        "source": "/home/ej/Desktop/inlens/app/src/main/res/anim/slide_up2.xml"
-    },
-    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/font_acme.xml.flat",
         "source": "/home/ej/Desktop/inlens/app/src/main/res/font/acme.xml"
     },
@@ -2356,6 +2360,10 @@
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/2e0a5ac4be94655299b9a24018c5e4b1/res/drawable-xhdpi-v4/notification_bg_low_pressed.9.png"
     },
     {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_gallery_fab_rotate_360.xml.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/anim/gallery_fab_rotate_360.xml"
+    },
+    {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/color_abc_tint_default.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/color/abc_tint_default.xml"
     },
@@ -2390,6 +2398,10 @@
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/color-v23_abc_btn_colored_text_material.xml.flat",
         "source": "/home/ej/.gradle/caches/transforms-2/files-2.1/bcbb1f5b36b9664b62b0b46f44e57a9e/res/color-v23/abc_btn_colored_text_material.xml"
+    },
+    {
+        "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/anim_slide_back_up.xml.flat",
+        "source": "/home/ej/Desktop/inlens/app/src/main/res/anim/slide_back_up.xml"
     },
     {
         "merged": "/home/ej/Desktop/inlens/app/build/intermediates/res/merged/debug/layout_member_card.xml.flat",

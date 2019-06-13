@@ -38,8 +38,8 @@
     </style>
 
     <style name="UpBottomSlideDialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/slide_up2</item>
-        <item name="android:windowExitAnimation">@anim/slide_bottom2</item>
+        <item name="android:windowEnterAnimation">@anim/slide_from_top</item>
+        <item name="android:windowExitAnimation">@anim/slide_back_up</item>
     </style>
 
 </resources>

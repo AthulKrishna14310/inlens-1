@@ -3,8 +3,12 @@
     <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#3E3D63</color>
     <color name="colorAccent">#6567a0</color>
+    <color name="colordimAccent">#8586B3</color>
     <color name="dimPrimary">#484773</color>
     <color name="white">#ffffff</color>
+    <color name="dimwhite">#eeeeee</color>
     <color name="black">#000000</color>
+    <color name="dimdark">#3c3c3c</color>
+    <color name="brighdark">#1b1b1b</color>
 
 </resources>
